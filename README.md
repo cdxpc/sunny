@@ -1,2 +1,2 @@
 # sunny
-sunny project
+Sunny is a spring boot project
