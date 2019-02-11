@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+    <title>Sunny管理平台-登录 </title>
+    <meta name="keywords" content="Sunny管理平台">
+    <link th:href="@{/plugins/font-awesome.css}" rel="stylesheet"/>
+    <link th:href="@{/plugins/style.css}" rel="stylesheet"/>
+    <link th:href="@{/plugins/bootstrap/bootstrap.min.css}" rel="stylesheet"/>
+    <link th:href="@{/plugins/icheck-1.x/skins/square/_all.css}" rel="stylesheet"/>
+    
+    <link th:href="@{/sunny/css/sunny.css}" rel="stylesheet"/>
+    <link th:href="@{/sunny/login.min.css}" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <link rel="shortcut icon" th:href="@{/favicon.ico}"/>
+    <script>
+        if(window.top!==window.self){window.top.location=window.location};
+    </script>
+</head>
+
+<body class="signin">
+	<canvas id="canvas"></canvas>
+    <div class="signinpanel login-box">
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="signin-info">
+                    <div class="logopanel m-b">
+                        <h2><img alt="[ logo]" src="../static/sunny.png" th:src="@{/sunny.png}"> Sunny 管理平台</h2>
+                    </div>
+                    <div class="m-b"></div>
+                    <ul class="m-b">
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 一个轻量级的Java快速开发管理平台，基础脚手架，高效开发</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 使用SpringBoot+SpringMVC+Mybatis+Mapper+Shiro等技术</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 友好的代码结构及注释，便于阅读及二次开发</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 完善的XSS防范及脚本过滤，彻底杜绝XSS攻击</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 日志分级输出，便于分析日志</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 前端使用Bootstrap+Thymeleaf，页面美观，上手容易</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> 官方QQ群：11110000(平台系统开发)</li>
+	                    <li><i class="fa fa-arrow-circle-o-right m-r-xs"></i> <a href="http://blog.wangsaisai.cn" target="_blank" style="color: #53d43d;">博客地址：http://blog.wangsaisai.cn</a>
+	                    </li>
+	                </ul>
+                    <strong>还没有账号？ <a href="#">立即注册 &raquo;</a></strong>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <form id="signupForm">
+                    <h4 class="no-margins">登录：</h4>
+                    <p class="m-t-md">阳光每一天，普照每一人</p>
+                    <input type="text"     name="loginName" class="form-control uname"     placeholder="用户名" value="admin"    />
+                    <input type="password" name="password" class="form-control pword m-b" placeholder="密 码"  value="admin123" />
+                    <div class="row" th:if="${captchaEnabled==true}">
+						<div class="col-xs-6">
+						    <input type="text" name="captcha" class="form-control code" placeholder="验证码" maxlength="5">
+						</div>
+						<div class="col-xs-6">
+							<a href="javascript:void(0);" title="点击更换验证码">
+								<img th:src="@{captcha(type=${captchaType})}" class="imgcode" width="90%"/>
+							</a>
+						</div>
+					</div>
+                    <!-- <input class="i-checks" type="checkbox" name="rememberme" />&nbsp;&nbsp;记住我 -->
+                    <div class="checkbox">
+						<label> 
+							<input type="checkbox" name="rememberme"/><i class="input-helper"></i>&nbsp;&nbsp;记住我
+						</label>
+					</div>
+                    <button class="btn btn-success btn-block" id="btnSubmit" data-loading="正在验证登录，请稍后...">登录</button>
+                </form>
+            </div>
+        </div>
+        <div class="signup-footer">
+            <div class="pull-left">
+                Copyright&copy;2019 Sunny@版权所有.All Rights Reserved.
+            </div>
+        </div>
+    </div>
+</body>
+
+<!-- 全局js -->
+<script th:src="@{/plugins/jquery-2.1.1.min.js}"></script>
+<script th:src="@{/plugins/bootstrap/bootstrap.min.js}"></script>
+<!-- 验证插件 -->
+<script th:src="@{/plugins/jquery-validate/jquery.validate.js}"></script>
+<script th:src="@{/plugins/jquery-validate/messages_zh.min.js}"></script>
+<script th:src="@{/plugins/jquery-plugin/jquery.blockUI.js}"></script>
+<script th:src="@{/plugins/layui/lay/modules/layer.js}"></script>
+<script th:src="@{/plugins/icheck-1.x/icheck.min.js}"></script>
+<script th:src="@{/sunny/js/sunny.js}"></script>
+
+<script th:inline="javascript">
+
+var ctx = [[@{/}]]; 
+var captchaType = [[${captchaType}]];  // math or char
+
+$(function() {
+    validateRule();
+    $(".i-checks").iCheck({checkboxClass:"icheckbox_square-green-login"});
+	$('.imgcode').click(function() {
+		var url = ctx + "captcha?type=" + captchaType + "&s=" + Math.random();
+		$(".imgcode").attr("src", url);
+	});
+});
+
+$.validator.setDefaults({
+    submitHandler: function() {
+		login();
+    }
+});
+
+function login() {
+	$.modal.loading($("#btnSubmit").data("loading"));
+	var loginName = $("input[name='loginName']").val().trim();
+    var password = $("input[name='password']").val().trim();
+    var captcha = $("input[name='captcha']").val();
+    var rememberMe = $("input[name='rememberme']").is(':checked');
+    $.ajax({
+        type: "post",
+        url: ctx + "login",
+        data: {
+            "loginName": loginName,
+            "password": password,
+            "captcha" : captcha,
+            "rememberMe": rememberMe
+        },
+        success: function(data) {
+            if (data.result.code == 200) { 
+                location.href = ctx + 'index';
+            } else {
+            	$.modal.closeLoading();
+            	$('.imgcode').click();
+            	$.modal.msg(data.result.message);
+            } 
+        }
+    });
+}
+
+function validateRule() {
+    var icon = "<i class='fa fa-times-circle'></i> ";
+    $("#signupForm").validate({
+        rules: {
+        	loginName: {
+                required: true
+            },
+            password: {
+                required: true
+            }
+        },
+        messages: {
+        	loginName: {
+                required: icon + "请输入您的登陆名",
+            },
+            password: {
+                required: icon + "请输入您的密码",
+            }
+        }
+    })
+}
+
+
+resizeCanvas();
+//添加窗口尺寸改变响应监听
+/* $(window).resize(resizeCanvas());*/
+//页面加载后先设置一下canvas大小
+
+//窗口尺寸改变响应（修改canvas大小）
+function resizeCanvas() {
+	$("#canvas").attr("width", $(window).width());
+	$("#canvas").attr("height", $(window).height());
+};
+
+var canvas = document.getElementById("canvas");
+var canCtx = canvas.getContext('2d');
+
+function rand(min, max) {
+	return parseInt(Math.random() * (max - min + 1) + min);
+}
+
+function Round() {
+	//随机大小
+  	this.r = rand(5, 10);
+  	//随机位置
+  	var x = rand(0,canvas.width - this.r);//仿制超出右边界
+  	this.x = x<this.r ? this.r:x;
+  	var y = rand(0,canvas.height - this.r);
+  	this.y = y<this.r ? this.r:y;
+  	//随机速度
+  	var speed = rand(1, 3);
+  	this.speedX = rand(0, 4) > 2 ? speed : -speed;
+  	this.speedY = rand(0, 4) > 2 ? speed : -speed;
+}
+
+Round.prototype.draw = function() {
+	canCtx.fillStyle = 'rgba(31,255,226,1)';
+	canCtx.beginPath();
+	canCtx.arc(this.x, this.y, this.r, 0, 2 * Math.PI, true);
+	canCtx.closePath();
+	canCtx.fill();
+}
+
+Round.prototype.links = function(){
+  for (var i=0;i<ballobj.length;i++) {
+      var l = Math.sqrt((ballobj[i].x - this.x)*(ballobj[i].x - this.x)+(ballobj[i].y - this.y)*(ballobj[i].y - this.y));
+      var a = 1/l *100;
+      if(l<250){
+    	  canCtx.beginPath();
+    	  canCtx.moveTo(this.x,this.y);
+    	  canCtx.lineTo(ballobj[i].x,ballobj[i].y);
+    	  canCtx.strokeStyle = 'rgba(31,255,226,'+a+')';
+    	  canCtx.stroke();
+    	  canCtx.closePath();
+      }
+  }
+}
+
+Round.prototype.move = function() {
+	this.x += this.speedX/10;
+  	if (this.x > canvas.width  || this.x < 0) {
+      	this.speedX *= -1;
+  	}
+  	this.y += this.speedY/10;
+  	if (this.y > canvas.height  || this.y < 0) {
+      	this.speedY *= -1;
+  	}
+}
+
+var ballobj = [];
+
+function init() {
+  for (var i = 0; i < 40; i++) { //小球大小
+      var obj = new Round();
+      obj.draw();
+      obj.move();
+      ballobj.push(obj);
+  }
+}
+
+init();
+
+function ballmove(){
+	canCtx.clearRect(0,0,canvas.width,canvas.height);
+  	for (var i=0;i<ballobj.length;i++) {
+      	var ball = ballobj[i];
+      	ball.draw();
+      	ball.move();
+      	ball.links();
+  	}
+  	window.requestAnimationFrame(ballmove);
+}
+
+ballmove();
+
+$(window).resize(function(){
+	resizeCanvas();
+});
+	
+</script>
+</html>

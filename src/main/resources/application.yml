@@ -1,0 +1,109 @@
+#================================================ undertow 服务容器相关配置   =============================================#
+server:
+  port: 1001											#   端口
+  connection-timeout: 60000
+  servlet: 
+    context-path: /sunny								# contextPath
+    session:
+      timeout: 30
+  undertow:
+    worker-threads: 500									#   工作线程数
+    io-threads: 1000									# IO线程数
+    
+#================================================== spring 相关配置   ==================================================#
+spring: 
+  datasource: 
+    druid: 
+      driver-class-name: com.mysql.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/db_sunny?useUnicode=true&characterEncoding=utf8&useSSL=false
+      username: root
+      password: root
+      validation-query: select 'x'
+      initial-size: 5
+      max-active: 20
+      min-idle: 10
+      max-wait: 60000
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 50
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      filters: stat,wall,slf4j
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+   
+  thymeleaf:                                            # thymeleaf 模板配置
+    mode: HTML
+    servlet:
+      content-type: text/html; charset=utf-8
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: utf-8
+    cache: false
+    template-resolver-order: 5
+    
+  messages:                                             # 国际化资源配置
+    basename: i18n/messages
+  
+  jackson:                                              # jackson
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    
+  servlet:                                              # servlet 文件传输
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+      
+  #devtools:                                            # dev tools
+    #restart:
+      #enabled: true
+      
+  profiles:                                             # 配置文件激活（开发、测试、回归、生产）
+    active:
+    - dev
+
+#============================================= mybatis/mapper 相关配置   ===============================================#
+mapper:
+  mappers:
+  - com.sunny.core.base.BaseMapper
+  not-empty: true
+  identity: MYSQL
+  
+# pageHelper 配置
+#pagehelper: 
+#  helper-dialect: mysql
+#  reasonable: true
+#  support-methods-arguments: true
+#  params: count=countSql
+
+#=============================================== sunny 项目自定义属性   ==================================================#
+sunny: 
+  shiro:                                                # shiro相关配置
+    captcha: 
+      enabled: false									    # 验证码开关
+      type: math										# 验证码方式
+    session: 
+      timeout: 30										#   超时时长(分钟)
+      validationInterval: 10							#   有效性(分钟)
+    cookie:                                             # cookie配置
+      domain: 
+      path: /
+      httpOnly: false
+      maxAge: 7
+    login:                                              # login配置
+      loginUrl: /login
+      unauthorizedUrl: /unauth
+      indexUrl: /index
+  user:                                                 # 用户相关
+    password:                                           # 登陆密码错误次数控制
+      maxRetryCount: 5									#   密码输入错误的最大次数限制
+      interval: 12000									#   超过最大密码错误次数后，运行下次尝试登录的最大时间间隔（单位：秒）
+      salt: Cxc0624==									# 加密盐
+  upload:                                               # 文件上传
+    profile: /profile/									# 文件上传存放路径
+  pros: 
+    C.defFlag: N
+    C.status: 1
+    R.defFlag: N
+    

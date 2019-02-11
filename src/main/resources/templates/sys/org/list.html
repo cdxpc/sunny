@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Sunny管理平台-机构管理</title>
+	<link th:replace="@{include/treetable-list-header}" rel="stylesheet" />
+	<script th:replace="@{sys/org/list-js}"></script>
+</head>
+<body>
+	<div class="wrapper wrapper-content">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">组织机构树</h3>
+			</div>
+			<div class="panel-body">
+				<!-- 工具栏 -->
+				<div class="row">
+					<!-- 搜索 -->
+					<div class="accordion-group">
+						<div id="searchCollapsePanel" class="accordion-body collapse">
+							<div class="accordion-inner">
+								<form id="searchForm" class="form form-horizontal well clearfix">
+									<div class="col-xs-6 col-sm-6 col-md-4">
+										<label class="label-item single-overflow pull-left">机构名称：</label> 
+										<input id="orgName" name="orgName" maxlength="64" class=" form-control m-b" placeholder="输入机构名称，可模糊匹配"/>
+									</div>
+									<div class="col-xs-6 col-sm-6 col-md-4">
+										<label class="label-item single-overflow pull-left">机构编号：</label> 
+										<input id="orgCode" name="orgCode" maxlength="64" class=" form-control m-b" placeholder="输入机构编号，可精确匹配"/>
+									</div>
+									<div class="col-xs-12 col-sm-6 col-md-4">
+										<div style="margin-top: 24px">
+											<a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
+											<a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-refresh"></i> 重置</a>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<!-- 工具栏 -->
+					<div id="orgToolbar">
+						<a id="add" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> 新建</a>
+						<button id="remove" class="btn btn-danger" disabled><i class="glyphicon glyphicon-remove"></i> 删除</button>
+						<a class="accordion-toggle btn btn-default " data-toggle="collapse" data-parent="#accordion2" href="#searchCollapsePanel">
+							<i class="fa fa-search"></i> 检索
+						</a>
+					</div>
+					<!-- 表格 -->
+					<table id="bootstrap-treeTable" class="table table-hover" data-toolbar="#orgToolbar"></table>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

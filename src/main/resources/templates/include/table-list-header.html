@@ -1,0 +1,18 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+
+<link th:replace="@{include/compent/jquery-bootstrap}" rel="stylesheet" />
+
+<script type="text/javascript">
+
+var ctx = [[@{/}]];
+
+$(document).ready(function(){
+	$('input.i-checks').iCheck({
+		checkboxClass: 'icheckbox_square-blue',
+		radioClass: 'iradio_square-blue',
+		increaseArea: '20%' // optional
+	});
+});
+</script>

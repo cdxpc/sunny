@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sunny管理平台-项目概述</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+    <link th:href="@{/favicon.ico}" rel="shortcut icon" >
+</head>
+
+<body class="gray-bg">
+    <div class="row  border-bottom white-bg dashboard-header">
+        <div class="col-sm-8">
+            <blockquote class="text-warning" style="font-size:14px">您是否需要自己做一款后台、会员中心等等的，但是又缺乏html等前端知识…。
+                <br>您是否一直在苦苦寻找一款适合自己的后台主题 …
+                <br>…………
+                <h4 class="text-danger">那么，现在Sunny平台来了。</h4>
+            </blockquote>
+        </div>
+        <div class="col-sm-4">
+            <blockquote class="text-warning" style="font-size:14px">
+            	<div><h4>联系作者</h4></div>
+                <div class="ibox-content">
+                    <p><i class="fa fa-send-o"></i> 官网：<a href="" target="_blank">xxx</a></p>
+                    <p><i class="fa fa-qq"></i> QQ群：<a href="" target="_blank">10000</a></p>
+                    <p><i class="fa fa-weixin"></i> 微信：<a href="javascript:;">wx</a></p>
+                    <p><i class="fa fa-credit-card"></i> 支付宝：<a href="javascript:;" class="支付宝信息">zfb</a></p>
+                </div>
+            </blockquote>
+        </div>
+        <div class="col-sm-12"><hr/></div>
+        <div class="col-sm-7">
+            <h2>Sunny平台</h2>
+            <p>一直想做一款后台管理系统，看了很多优秀的开源项目但是发现没有合适自己的。于是利用空闲休息时间开始自己写一套后台系统。如此有了Sunny。，她可以用于所有的Web应用程序，如<b>网站管理后台</b>，<b>网站会员中心</b>，<b>CMS</b>，<b>CRM</b>，<b>OA</b>等等，当然，您也可以对她进行深度定制，以做出更强系统。所有前端后台代码封装过后十分精简易上手，出错概率低。同时支持移动客户端访问。系统会陆续更新一些实用功能。</p>
+            <p>
+                <b>最新免费版本：</b><span>v[[${version}]] </span><span class="label label-warning"> &yen; 免费开源</span>
+                <b style="margin-left: 300px;">最新收费版本：</b><span>v[[${version}]] </span><span class="label label-warning"> &yen; 1000</span>
+            </p>
+            <br>
+            <p>
+                <a class="btn btn-success btn-outline" href="" target="_blank">
+                    <i class="fa fa-cloud"> </i> 访问码云
+                </a>
+                <a class="btn btn-white btn-bitbucket" href="" target="_blank">
+                    <i class="fa fa-home"></i> 访问主页
+                </a>
+            </p>
+        </div>
+        <div class="col-sm-3">
+            <h4>技术选型：</h4>
+            <ol>
+                <li>核心框架：Spring Boot。</li>
+                <li>核心框架：Spring MVC。</li>
+                <li>安全框架：Apache Shiro。</li>
+                <li>模板引擎：Thymeleaf。</li>
+                <li>持久层框架：MyBatis。</li>
+                <li>持久层通用框架：Mapper。</li>
+				<li>定时任务:Quartz。</li>
+                <li>数据库连接池：Druid。</li>
+                <li>Json工具类：Jackson。</li>
+                <li>更多……</li>
+            </ol>
+        </div>
+        <div class="col-sm-2">
+            <h3>Hello,Guest</h3>
+            <small>移动设备访问请扫描以下二维码：</small>
+            <br/><br/>
+            <img th:src="@{/img/qr_code.png}" width="100%" style="max-width:160px;">
+            <br>
+        </div>
+    </div>
+    
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-7">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>项目更新日志</h5>
+                    </div>
+                    <div class="ibox-content no-padding">
+                        <div class="panel-body">
+                            <div class="panel-group" id="version">
+                            	<!-- 可以弄个更新日志进行查询显示 -->
+                                <div class="panel panel-default">
+                                    <div class="panel-heading-version">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v01">v1.0.0</a><code class="pull-right">2018.08.01</code>
+                                        </h4>
+                                    </div>
+                                    <div id="v01" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>Sunny平台1.1.0版本正式发布。</li>
+                                                <li>bug修复。</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="panel panel-default">
+                                    <div class="panel-heading-version">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#version" href="#v02">v1.0.0</a><code class="pull-right">2018.08.01</code>
+                                        </h4>
+                                    </div>
+                                    <div id="v02" class="panel-collapse collapse">
+                                        <div class="panel-body">
+                                            <ol>
+                                                <li>Sunny平台1.0.0版本正式发布。</li>
+                                            </ol>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title"><h5>捐赠</h5></div>
+                    <div class="ibox-content">
+                        <div class="alert alert-warning">请作者喝杯咖啡。</div>
+                        <p id="pay-qrcode">
+                            <a href="javascript:;"><img th:src="@{/img/weixin-pay.jpg}" width="49%" alt="请使用手机微信扫码支付"></a>
+                            <a href="javascript:;"><img th:src="@{/img/ali-pay.jpg}" width="49%" alt="请使用手机支付宝扫码支付"></a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

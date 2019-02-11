@@ -1,0 +1,250 @@
+<script type="text/javascript">
+$(function() {
+	   
+	$.table.init(dicTypeOptions);
+	
+	$("#dictValue-table").bootstrapTable({
+		method: 'get',
+		dataType: 'json',
+		striped: true,
+		cache: false,
+		pagination: false,
+		url: prefix_value + "/data",
+		queryParams: function(params) {
+			return {dictTypeId: $("#dictTypeId").val()};
+		},
+		sidePagination: "server",
+		onDblClickRow: function(row, $el) { // 双击行,修改编辑
+			editValue(row.dictValueId);
+	    },
+	    columns: [{
+	        field: 'dictValueId',
+	        title: '字典值主键',
+	     	visible: false
+	    },
+	    {
+	        field: 'dictLabel',
+	        title: '字典标签'
+	    },
+	    {
+	        field: 'dictValue',
+	        title: '字典值'
+	    },
+	    {
+	        field: 'cssClass',
+	        title: '字典样式'
+	    },
+	    {
+	        field: 'isDefault',
+	        title: '是否默认值',
+	        formatter: function(value, row, index) {
+	        	if(value == 'Y') {
+	        		return '是';
+	        	}
+	        	return '否';
+	        }
+	    },
+	    {
+	        title: '操作',
+	        align: 'center',
+	        formatter: function(value, row, index) {
+	        	var dictValueId = row.dictValueId;
+	        	var actions = [];
+	            if(canRemove_value){
+	                actions.push('<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="removeValue(\'' + dictValueId + '\')"><i class="fa fa-remove"></i></a> ');
+	            }return actions.join('');
+	        }
+	    }]
+	});
+	
+    // 隐藏右边内容
+    $("#hiddenRightButton").on('click', function(){
+		$("#right").hide();
+	    $("#left").attr("class", "col-sm-12");
+	});
+    
+    // 删除时，按钮可以点击
+    $('#dictType-table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            				 'check-all.bs.table uncheck-all.bs.table', function () {
+        $('#remove').prop('disabled', ! $('#dictType-table').bootstrapTable('getSelections').length);
+    });
+    
+    // 新增按钮
+    $("#add").on('click', addType);
+    
+    // 删除按钮
+    $("#remove").on('click', batRemoveType);
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+    // 
+    $("#dictValueButton").on('click', addValue);
+    
+});
+
+var canCreate_type = true;	// 可创建数据
+var canLook_type = true;	// 可查看详情
+var canEdit_type = true;	// 可编辑数据
+var canRemove_type = true;	// 可删除数据
+var canShow_type = true;	// 可展示字典类型对应的值列表数据
+var prefix_type = ctx + "sys/dict/type";
+
+var dicTypeOptions = {
+	tableId: "dictType-table",
+    url: prefix_type + "/data",
+    createUrl: prefix_type + "/add",
+    updateUrl: prefix_type + "/edit/{id}",
+    saveUrl: prefix_type + "/save",
+    removeUrl: prefix_type + "/remove",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "字典类型",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	dblClick(row.dictTypeId);
+    }, 
+    columns: [{
+        checkbox: true
+    },
+    {
+        field: 'dictTypeId',
+        title: '字典类型主键',
+     	visible: false
+    },
+    {
+        field: 'dictTypeName',
+        title: '字典类型名称',
+        formatter: function(value, row, index) {
+        	if(canLook_type) {
+        		return '<a href="#" title="查看详情" onclick="lookType(\'' + row.dictTypeId + '\')">' + value + '</a>';
+        	}
+        	return value;
+        }
+    },
+    {
+        field: 'dictTypeKey',
+        title: '字典类型key',
+        formatter: function(value, row, index) {
+        	if(canShow_type) {
+        		var dictTypeId = row.dictTypeId;
+        		var dictTypeName = row.dictTypeName;
+        		return '<a href="#" title="显示字典值列表" onclick="showValues(\'' + dictTypeId + '\',\'' + dictTypeName + '\')">' + value + '</a>';
+        	}
+        	return value;
+        }
+    },
+    {
+        title: '操作',
+        align: 'center',
+        formatter: function(value, row, index) {
+        	var dictTypeId = row.dictTypeId;
+            var actions = [];
+            if(canRemove_type){
+                actions.push('<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="removeType(\'' + dictTypeId + '\')"><i class="fa fa-remove"></i></a> ');
+            }
+            return actions.join('');
+        }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function lookType(dictTypeId) {
+	$.operate.details(dictTypeId);
+}
+
+// 双击行编辑数据
+function dblClick(dictTypeId) {
+	if(canEdit_type) { // 有编辑权限才能修改
+		$.operate.edit(dictTypeId);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+// 新增字段类型
+function addType() {
+	$.operate.add();
+}
+
+// 批量删除
+function batRemoveType() {
+	$.operate.batRemove();
+}
+
+// 删除
+function removeType(dictTypeId) {
+	$.operate.remove(dictTypeId);
+}
+
+/*查看某个字典类型下的值列表*/
+function showValues(dictTypeId, dictTypeName) {
+	$("#left").attr("class", "col-sm-6");
+	setTimeout(function(){
+		$("#right").fadeIn(300);
+	},300);
+	$("#dictTypeId").val(dictTypeId);
+	$("#dictType").html("&nbsp;[" + dictTypeName + "]");
+	
+	$("#dictValue-table").bootstrapTable("refresh");
+}
+
+function addValue() {
+	var typeId = $("#dictTypeId").val();
+	var url = prefix_value + "/add/" + typeId;
+	$.modal.open("新增 [字典值]", url, null, null, null, $("#dictValue-table"));
+}
+
+function editValue(dictValueId) {
+	if(canEdit_value) { // 有编辑权限才能修改
+		var url = prefix_value + "/edit/" + dictValueId;
+		$.modal.open("修改 [字典值]", url, null, null, null, $("#dictValue-table"));
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+function removeValue(dictValueId) {
+	$.modal.confirm("确定删除该条字典值信息吗？", function() {
+		var config = {
+			url : prefix_value + "/remove",
+			type : 'post',
+			dataType : 'json',
+			data : {
+				"ids" : "'" + dictValueId + "'"
+			},
+			success : function(data) {
+				if (data.result.code === 200) {
+					$.modal.msgSuccess(data.result.message);
+					$("#dictValue-table").bootstrapTable("refresh");
+				} else {
+					$.modal.alertError(data.result.message)
+				}
+			}
+		};
+		$.ajax(config);
+	});
+}
+
+//============ dict value ==========
+
+var canCreate_value = true;	// 可创建数据
+var canLook_value = true;	// 可查看详情
+var canEdit_value = true;	// 可编辑数据
+var canRemove_value = true;	// 可删除数据
+var prefix_value = ctx + "sys/dict/value";
+</script>

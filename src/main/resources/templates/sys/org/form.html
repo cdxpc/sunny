@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Sunny管理平台-机构管理</title>
+	<link th:replace="@{include/treetable-list-header}" rel="stylesheet" />
+	<script th:replace="@{sys/org/list-js}"></script>
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form id="org-form" th:object="${org}" class="form-horizontal m" >
+			<input type="hidden" name="orgId" th:field="*{orgId}" />
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">机构名称：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" name="orgName" th:field="*{orgName}" placeholder="请输入机构名称"/>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<script type="text/javascript">
+var $table = null;
+function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+	$table = table;
+	if(validateForm.form()){
+		$("#org-form").submit();
+	}
+} 
+
+$(function() {
+	validateForm = $("#org-form").validate({
+		submitHandler: function(form){
+			var url = prefix_value + "/save";
+			$.post(url, $("#org-form").serializeJSON(), function(data){
+				if(data.result.code === 200 || data.result.code === 201) {
+					$.modal.msgSuccess(data.result.message);
+					$table.bootstrapTable("refresh");
+				} else {
+					$.modal.alertError(data.message);
+				}
+				$.modal.close();
+			});
+		},
+		errorContainer: "#messageBox",
+		errorPlacement: function(error, el) {
+			$("#messageBox").text("输入有误，请重新输入！");
+			if (el.is(":checkbox")||el.is(":radio")||el.parent().is(".input-append")){
+				error.appendTo(el.parent().parent());
+			} else {
+				error.insertAfter(el);
+			}
+		}
+	});
+});
+</script>
+</html>
