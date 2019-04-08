@@ -106,4 +106,10 @@ sunny:
     C.defFlag: N
     C.status: 1
     R.defFlag: N
+  cache: 
+    startUpInit: false
+    useCache: false
+  ex: 
+    table: ft_sys_table,ft_sys_column
+    column: sort,del_flag,status,create_by,create_time,last_update_by,last_update_time
     

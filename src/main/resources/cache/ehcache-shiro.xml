@@ -73,6 +73,26 @@
            timeToLiveSeconds="0"
            timeToIdleSeconds="0"
            statistics="true"/>
+    
+    <!-- 字典类型数据缓存  -->
+    <cache name="dict-TypeCache"
+           maxEntriesLocalHeap="10000"
+           overflowToDisk="false"
+           eternal="false"
+           diskPersistent="false"
+           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           statistics="true"/>
+           
+    <!-- 字典值数据缓存  -->
+    <cache name="dict-valueCache"
+           maxEntriesLocalHeap="10000"
+           overflowToDisk="false"
+           eternal="false"
+           diskPersistent="false"
+           timeToLiveSeconds="0"
+           timeToIdleSeconds="0"
+           statistics="true"/>
 
 </ehcache>
 	

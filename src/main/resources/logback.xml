@@ -65,9 +65,9 @@
 	<!-- <logger name="java.sql" level="debug" />
 	<logger name="org.springframework.jdbc" level="debug" /> -->
 
-	<logger name="com.sunny" level="debug" />
+	<logger name="com.sunny" level="info" />
 
-	<root level="info">
+	<root level="warn">
 		<appender-ref ref="console" />
 		<appender-ref ref="file_info" />
         <appender-ref ref="file_error" />
