@@ -27,6 +27,14 @@ import com.sunny.module.login.realm.SimpleLoginRealm;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 
+/**
+ * shiro 安全验证框架 boot 配置
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Configuration
 public class ShiroConfig {
 
@@ -78,7 +86,7 @@ public class ShiroConfig {
 	/**
 	 * 缓存管理器
 	 * 
-	 * @return
+	 * @return RetryLimitHashedCredentialsMatcher
 	 */
 	@Bean
 	public RetryLimitHashedCredentialsMatcher credentialsMatcher() {
@@ -119,9 +127,9 @@ public class ShiroConfig {
 //		return sessionFactory;
 //	}
 
-	/**
-	 * 自定义sessionFactory调度器
-	 */
+//	/**
+//	 * 自定义sessionFactory调度器
+//	 */
 //	@Bean
 //	public SpringSessionValidationScheduler sessionValidationScheduler() {
 //		SpringSessionValidationScheduler sessionValidationScheduler = new SpringSessionValidationScheduler();
@@ -190,13 +198,13 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/favicon.ico", "anon");
 		filterChainDefinitionMap.put("/sunny.png", "anon");
 		filterChainDefinitionMap.put("/css/**", "anon");
-//		filterChainDefinitionMap.put("/docs/**", "anon");
 		filterChainDefinitionMap.put("/fonts/**", "anon");
 		filterChainDefinitionMap.put("/img/**", "anon");
 		filterChainDefinitionMap.put("/plugins/**", "anon");
 		filterChainDefinitionMap.put("/profile/**", "anon");
 		filterChainDefinitionMap.put("/sunny/**", "anon");
 		filterChainDefinitionMap.put("/druid/**", "anon");
+//		filterChainDefinitionMap.put("/docs/**", "anon");
 		// 获取验证码
 		filterChainDefinitionMap.put("/captcha", "anon");
 		// 退出 logout地址，shiro去清除session

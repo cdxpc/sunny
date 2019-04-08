@@ -9,16 +9,19 @@ import com.google.code.kaptcha.impl.DefaultKaptcha;
 import com.google.code.kaptcha.util.Config;
 
 /**
- * 验证码 boot配置
- * @author tlbank
+ * 验证码 boot 配置
  *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
  */
 @Configuration
 public class CaptchaConfig {
 	
 	/**
 	 * 文字验证码
-	 * @return
+	 * @return DefaultKaptcha
 	 */
 	@Bean(name = "charKaptcha")
 	public DefaultKaptcha charKaptcha() {
@@ -28,7 +31,7 @@ public class CaptchaConfig {
 	
 	/**
 	 * 算术验证码
-	 * @return
+	 * @return DefaultKaptcha
 	 */
 	@Bean(name = "mathKaptcha")
 	public DefaultKaptcha mathKaptcha() {
@@ -42,7 +45,7 @@ public class CaptchaConfig {
 	
 	/**
 	 * 图片验证码
-	 * @return
+	 * @return DefaultKaptcha
 	 */
 	@Bean(name = "imageKaptcha")
 	public DefaultKaptcha imageKaptcha() {

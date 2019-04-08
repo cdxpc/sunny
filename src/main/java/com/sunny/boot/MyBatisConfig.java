@@ -11,6 +11,14 @@ import tk.mybatis.mapper.entity.Config;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
 import tk.mybatis.spring.annotation.MapperScan;
 
+/**
+ * mapper自动映射框架 boot 配置
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Configuration
 @MapperScan(basePackages = {"com.sunny.*.**.mapper"}, value = "tk.mybatis.mapper.annotation", mapperHelperRef = "mapperHelper")
 public class MyBatisConfig {
