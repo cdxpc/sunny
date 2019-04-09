@@ -3,7 +3,6 @@
 <head>
     <title>Sunny管理平台-字典管理</title>
     <link th:replace="@{include/table-list-header}" rel="stylesheet" />
-	<script th:replace="@{sys/dict/list-js}"></script>
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -23,22 +22,22 @@
 					<input class="form-control required" type="text" name="dictValue" th:field="*{dictValue}" placeholder="请输入值内容"/>
 				</div>
 			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label ">值样式：<font color="red">*</font></label>
-				<div class="col-sm-8">
-					<input class="form-control required" type="text" name="cssClass" th:field="*{cssClass}" placeholder="请输入值样式"/>
-				</div>
-			</div>
-			<div class="form-group">
+			<!-- <div class="form-group">
 				<label class="col-sm-3 control-label ">是否默认值：<font color="red">*</font></label>
 				<div class="col-sm-8">
 					<input class="form-control required" type="text" name="isDefault" th:field="*{isDefault}" placeholder="请选择是否为默认值"/>
+				</div>
+			</div> -->
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">值样式：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="cssClass" th:field="*{cssClass}" placeholder="请输入值样式"/>
 				</div>
 			</div>
 		</form>
 	</div>
 </body>
-<script type="text/javascript">
+<script th:inline="javascript">
 var $table = null;
 function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
 	$table = table;
@@ -47,14 +46,15 @@ function doSubmit(table) {//回调函数，在编辑和保存动作时，供open
 	}
 } 
 
+// 这个由于和字典type在同一个页面中，需要单独写，不能使用公共方法
 $(function() {
 	validateForm = $("#dictValue-form").validate({
 		submitHandler: function(form){
-			var url = prefix_value + "/save";
+			var url = ctx + "sys/dict/value/save";
 			$.post(url, $("#dictValue-form").serializeJSON(), function(data){
 				if(data.result.code === 200 || data.result.code === 201) {
 					$.modal.msgSuccess(data.result.message);
-					$table.bootstrapTable("refresh");
+					$table.bootstrapTable("refresh"); // 不能使用$table.refresh()
 				} else {
 					$.modal.alertError(data.message);
 				}

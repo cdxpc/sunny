@@ -38,7 +38,7 @@
 							</div>
 						</div>
 						<!-- 工具栏 -->
-						<div id="dictTypeToolbar">
+						<div id="toolbar">
 							<a id="add" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> 新建</a>
 							<button id="remove" class="btn btn-danger" disabled><i class="glyphicon glyphicon-remove"></i> 删除</button>
 							<a class="accordion-toggle btn btn-default " data-toggle="collapse" data-parent="#accordion2" href="#searchCollapsePanel">
@@ -46,7 +46,7 @@
 							</a>
 						</div>
 						<!-- 表格 -->
-						<table id="dictType-table" data-toolbar="#dictTypeToolbar" data-id-field="dictTypeId"></table>
+						<table id="dictType-table" data-toolbar="#toolbar" data-id-field="dictTypeId"></table>
 						
 					</div>
 
@@ -54,7 +54,7 @@
 						<div class="panel-heading">
 							<h4 class="panel-title">
 								<label>键值列表，所属类型: </label><font id="dictType" color="blue"></font>
-								<input type="hidden" id="dictTypeId" />
+								<input type="hidden" id="dictTypeKey" />
 							</h4>
 						</div>
 						<div class="panel-body">
@@ -62,7 +62,7 @@
 								<button id="dictValueButton" class="btn btn-outline btn-primary" title="添加键值">
 									<i class="fa fa-plus-circle"></i> 添加键值
 								</button>
-								<button id="hiddenRightButton" class="btn btn-outline btn-primary" title="影藏合同域">
+								<button id="hiddenRightButton" class="btn btn-outline btn-primary" title="影藏">
 									<i class="fa fa-rocket"></i> 隐藏
 								</button>
 							</div>

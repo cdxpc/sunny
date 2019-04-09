@@ -1,4 +1,4 @@
-<script type="text/javascript">
+<script th:inline="javascript">
 $(function() {
 	   
 	$.table.init(dicTypeOptions);
@@ -11,7 +11,7 @@ $(function() {
 		pagination: false,
 		url: prefix_value + "/data",
 		queryParams: function(params) {
-			return {dictTypeId: $("#dictTypeId").val()};
+			return {dictTypeKey: $("#dictTypeKey").val()};
 		},
 		sidePagination: "server",
 		onDblClickRow: function(row, $el) { // 双击行,修改编辑
@@ -35,6 +35,23 @@ $(function() {
 	        title: '字典样式'
 	    },
 	    {
+	        field: 'sort',
+	        title: '排序',
+	        formatter: function(value, row, index){
+	        	var up = '<a href="javascript:;" onclick="sortValue('+index+', true)"><i class="fa fa-long-arrow-up" title="上移"></i></a>&nbsp;&nbsp;';
+	        	var down = '<a href="javascript:;" onclick="sortValue('+index+', false)"><i class="fa fa-long-arrow-down" title="下移"></i></a>';
+	        	var params = $("#dictValue-table").bootstrapTable("getOptions");
+	        	var total = params.data.length - 1;
+	        	if(index === 0) {
+	        		up = '-&nbsp;&nbsp;';
+				} else if(index === total)  {
+	        		down = '-';
+				}
+	        	
+	        	return up + down;
+	        }
+	    },
+	    /* {
 	        field: 'isDefault',
 	        title: '是否默认值',
 	        formatter: function(value, row, index) {
@@ -43,7 +60,7 @@ $(function() {
 	        	}
 	        	return '否';
 	        }
-	    },
+	    }, */
 	    {
 	        title: '操作',
 	        align: 'center',
@@ -93,6 +110,10 @@ var canRemove_type = true;	// 可删除数据
 var canShow_type = true;	// 可展示字典类型对应的值列表数据
 var prefix_type = ctx + "sys/dict/type";
 
+var pageSize = null;
+var pageNum = null;
+var total = null;
+
 var dicTypeOptions = {
 	tableId: "dictType-table",
     url: prefix_type + "/data",
@@ -131,11 +152,33 @@ var dicTypeOptions = {
         title: '字典类型key',
         formatter: function(value, row, index) {
         	if(canShow_type) {
-        		var dictTypeId = row.dictTypeId;
+        		var dictTypeKey = row.dictTypeKey;
         		var dictTypeName = row.dictTypeName;
-        		return '<a href="#" title="显示字典值列表" onclick="showValues(\'' + dictTypeId + '\',\'' + dictTypeName + '\')">' + value + '</a>';
+        		return '<a href="#" title="显示字典值列表" onclick="showValues(\'' + dictTypeKey + '\',\'' + dictTypeName + '\')">' + value + '</a>';
         	}
         	return value;
+        }
+    },
+    {
+        field: 'sort',
+        title: '排序',
+        formatter: function(value,row,index){
+        	var up = '<a href="javascript:;" onclick="sortType('+index+', true)"><i class="fa fa-long-arrow-up" title="上移"></i></a>&nbsp;&nbsp;';
+        	var down = '<a href="javascript:;" onclick="sortType('+index+', false)"><i class="fa fa-long-arrow-down" title="下移"></i></a>';
+        	var params = $("#dictType-table").bootstrapTable("getOptions");
+        	pageSize = params.pageSize;
+        	pageNum = params.pageNumber;
+        	total = params.totalRows;
+        	if(total === 1) {
+        		return '-';
+        	} else {
+	        	if(((pageNum - 1) * pageSize + index) == 0) {
+	        		up = '-&nbsp;&nbsp;';
+				} else if(((pageNum - 1) * pageSize + index) == (total - 1))  {
+	        		down = '-';
+				}
+        	}
+        	return up + down;
         }
     },
     {
@@ -144,7 +187,7 @@ var dicTypeOptions = {
         formatter: function(value, row, index) {
         	var dictTypeId = row.dictTypeId;
             var actions = [];
-            if(canRemove_type){
+            if(canRemove_type && row.hasValues == '2'){
                 actions.push('<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="removeType(\'' + dictTypeId + '\')"><i class="fa fa-remove"></i></a> ');
             }
             return actions.join('');
@@ -164,13 +207,13 @@ function reset() {
 
 // 查看详情
 function lookType(dictTypeId) {
-	$.operate.details(dictTypeId);
+	$.operate.details($.table, dictTypeId);
 }
 
 // 双击行编辑数据
 function dblClick(dictTypeId) {
 	if(canEdit_type) { // 有编辑权限才能修改
-		$.operate.edit(dictTypeId);
+		$.operate.edit($.table, dictTypeId);
 	} else {
 		$.modal.msg("您没有编辑权限！");
 	}
@@ -178,41 +221,63 @@ function dblClick(dictTypeId) {
 
 // 新增字段类型
 function addType() {
-	$.operate.add();
+	$.operate.add($.table);
 }
 
 // 批量删除
 function batRemoveType() {
-	$.operate.batRemove();
+	$.operate.batRemove($.table);
 }
 
 // 删除
 function removeType(dictTypeId) {
-	$.operate.remove(dictTypeId);
+	$.operate.remove($.table, dictTypeId);
+}
+
+//上移下移  -- 送给后台几个参数，后台自动完成排序号的交换
+function sortType(index, isUp) {
+	var param = $("#searchForm").serializeJSON();
+	$.operate.doChange($.table, prefix_type, index, isUp, true, param);
+}
+
+//============ dict value ==========
+
+var canCreate_value = true;	// 可创建数据
+var canLook_value = true;	// 可查看详情
+var canEdit_value = true;	// 可编辑数据
+var canRemove_value = true;	// 可删除数据
+var prefix_value = ctx + "sys/dict/value";
+
+//上移下移
+function sortValue(index, isUp) {
+	var param = {};
+	param.dictTypeId = $("#dictTypeId").val();
+	$.operate.doChange($("#dictValue-table"), prefix_value, index, isUp, false, param);
 }
 
 /*查看某个字典类型下的值列表*/
-function showValues(dictTypeId, dictTypeName) {
+function showValues(dictTypeKey, dictTypeName) {
 	$("#left").attr("class", "col-sm-6");
 	setTimeout(function(){
 		$("#right").fadeIn(300);
 	},300);
-	$("#dictTypeId").val(dictTypeId);
+	$("#dictTypeKey").val(dictTypeKey);
 	$("#dictType").html("&nbsp;[" + dictTypeName + "]");
 	
 	$("#dictValue-table").bootstrapTable("refresh");
 }
 
 function addValue() {
-	var typeId = $("#dictTypeId").val();
-	var url = prefix_value + "/add/" + typeId;
-	$.modal.open("新增 [字典值]", url, null, null, null, $("#dictValue-table"));
+	var typeKey = $("#dictTypeKey").val();
+	var url = prefix_value + "/add/" + typeKey;
+	$.modal.open($("#dictValue-table"), "新增 [字典值]", url);
 }
 
 function editValue(dictValueId) {
 	if(canEdit_value) { // 有编辑权限才能修改
 		var url = prefix_value + "/edit/" + dictValueId;
-		$.modal.open("修改 [字典值]", url, null, null, null, $("#dictValue-table"));
+		$.modal.open($("#dictValue-table"), "修改 [字典值]", url);
+		$.table.refresh();
 	} else {
 		$.modal.msg("您没有编辑权限！");
 	}
@@ -225,26 +290,19 @@ function removeValue(dictValueId) {
 			type : 'post',
 			dataType : 'json',
 			data : {
-				"ids" : "'" + dictValueId + "'"
+				"id" : dictValueId
 			},
 			success : function(data) {
 				if (data.result.code === 200) {
 					$.modal.msgSuccess(data.result.message);
 					$("#dictValue-table").bootstrapTable("refresh");
+					$.table.refresh();
 				} else {
-					$.modal.alertError(data.result.message)
+					$.modal.msgError(data.result.message)
 				}
 			}
 		};
 		$.ajax(config);
 	});
 }
-
-//============ dict value ==========
-
-var canCreate_value = true;	// 可创建数据
-var canLook_value = true;	// 可查看详情
-var canEdit_value = true;	// 可编辑数据
-var canRemove_value = true;	// 可删除数据
-var prefix_value = ctx + "sys/dict/value";
 </script>

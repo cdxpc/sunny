@@ -21,8 +21,10 @@
         <div class="sidebar-collapse">
             <ul class="nav" id="side-menu">
                 <li class="nav-header">
-                    <div class="dropdown profile-element"> <span>
-                        <img th:src="(${user.headImg} != '' and ${user.headImg} != null) ? @{'/profile/' + ${user.headImg}}: @{'/img/profile.jpg'} " alt="image" class="img-circle" height="60" width="60"/></span>
+                    <div class="dropdown profile-element"> 
+                    	<span style="padding: 30px;">
+                        	<img th:src="(${user.headImg} != '' and ${user.headImg} != null) ? @{'/profile/' + ${user.headImg}}: @{'/img/profile.jpg'} " alt="image" class="img-circle" height="60" width="60"/>
+                        </span>
                        	<span class="clear">
                        		<span class="block m-t-xs">
                        			<strong class="font-bold">
@@ -36,7 +38,7 @@
                  
                 <li th:each="menu : ${menus}">
                 	<a href="#">
-                		<i class="fa fa fa-bar-chart-o" th:class="${menu.icon}"></i>
+                		<i th:class="${menu.icon}"></i>
                     	<span class="nav-label" th:text="${menu.menuName}">一级菜单</span> 
                     	<span class="fa arrow"></span>
                 	</a>
@@ -57,7 +59,7 @@
     <!--右侧部分开始-->
     <div id="page-wrapper" class="gray-bg dashbard-1">
         <div class="row border-bottom">
-            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 8px;">
                 <div class="navbar-header">
 
                     <a class="navbar-minimalize minimalize-styl-2 btn btn-default " href="#" title="收起菜单">
@@ -124,8 +126,14 @@
     <!--右侧部分结束-->
 </div>
 </body>
-<script type="text/javascript">
+<script th:inline="javascript">
+/*<![CDATA[*/
+var user = /*[[${user}]]*/;
+/*]]>*/
 $(function() {
+	
+	sessionStorage.setItem("currentUser", JSON.stringify(user));
+	
     // MetsiMenu
     $('#side-menu').metisMenu();
 
