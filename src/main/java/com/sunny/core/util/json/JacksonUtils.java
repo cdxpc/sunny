@@ -23,6 +23,14 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * json 操作工具类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Slf4j
 public class JacksonUtils {
 	
@@ -88,7 +96,7 @@ public class JacksonUtils {
 	/**
 	 * JavaBean 对象序列化 Json 字符串
 	 * @param value
-	 * @return
+	 * @return String
 	 */
 	public String toJson(Object value) {
 		try {
@@ -104,7 +112,7 @@ public class JacksonUtils {
 	 * Json 字符串转 JavaBean 对象
 	 * @param json
 	 * @param cls
-	 * @return
+	 * @return T
 	 */
 	public <T> T toBean(String json, Class<T> cls) {
 		if(StringUtils.isEmpty(json)) return null;

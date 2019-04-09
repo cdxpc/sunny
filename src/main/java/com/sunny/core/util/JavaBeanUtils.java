@@ -11,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * javaBean 属性相互拷贝辅助类
- * 
- * @author kevin.chen crsfyc-9@163.com   
- * @since 1.0.0.0 
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
  */
 @Slf4j
 public class JavaBeanUtils {
@@ -47,12 +49,12 @@ public class JavaBeanUtils {
 	/**
 	 * 判断一个对象是不是null 或   ""
 	 * @param obj
-	 * @return
+	 * @return boolean
 	 */
 	private static boolean isNotEmpty(Object obj) {
 		if(obj == null) return false;
 		if(obj instanceof Boolean) {
-			return ((Boolean) obj).booleanValue();
+			return ((Boolean) obj);
 		}
 		if(obj instanceof String) {
 			return StringUtils.isNotEmpty(obj.toString());

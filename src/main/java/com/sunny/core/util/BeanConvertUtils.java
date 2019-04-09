@@ -4,9 +4,11 @@ import java.util.List;
 
 /**
  * javaBean 属性相互拷贝处理器
- * 
- * @author kevin.chen crsfyc-9@163.com
- * @since 1.0.0.0
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
  */
 public class BeanConvertUtils {
 

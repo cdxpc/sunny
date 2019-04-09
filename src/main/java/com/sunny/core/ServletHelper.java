@@ -14,6 +14,14 @@ import com.sunny.core.util.Converts;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * servlet 操作辅助类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServletHelper {
 	
@@ -96,7 +104,7 @@ public class ServletHelper {
 	 */
 	public static boolean getBoolAttr(String name, boolean defValue) {
 		Boolean bool = Converts.toBoolean(getRequest().getAttribute(name), defValue);
-		return bool == null ? defValue : bool.booleanValue();
+		return bool == null ? defValue : bool;
 	}
 	
 	// ============ parameters ================
@@ -144,14 +152,13 @@ public class ServletHelper {
 	 */
 	public static boolean getBoolParameter(String name, boolean defValue) {
 		Boolean bool = Converts.toBoolean(getRequest().getParameter(name), defValue);
-		return bool == null ? defValue : bool.booleanValue();
+		return bool == null ? defValue : bool;
 	}
 
 	/**
 	 * 	渲染到客户端
-	 * @param response
 	 * @param string
-	 * @return
+	 * @return String
 	 */
 	public static String renderString(String string) {
 		try {

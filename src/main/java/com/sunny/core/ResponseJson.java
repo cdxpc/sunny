@@ -10,6 +10,14 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * 响应体json对象
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Data
 @NoArgsConstructor
 @RequiredArgsConstructor(staticName = "of")
@@ -21,6 +29,7 @@ public class ResponseJson implements Serializable {
 	private R result;
 	private Object rows;
 	private int pageNow;
+	private int pageSize;
 	private int pages;
 	private long total;
 
@@ -28,7 +37,15 @@ public class ResponseJson implements Serializable {
 	public String toString() {
 		return "ResponseJson : " + JacksonUtils.getInstance(false).toJson(this);
 	}
-	
+
+	/**
+	 * 响应结果 result
+	 *
+	 * @author cdxpc <cdxpc2018@163.com>, <br/>
+	 * 		   kevin.chen <crsfyc-9@163.com>
+	 * @date 2019年2月13日
+	 * @since 1.0.0v
+	 */
 	@Data
 	@AllArgsConstructor(staticName = "of")
 	public static class R {
@@ -83,7 +100,7 @@ public class ResponseJson implements Serializable {
 	}
 
 	public static ResponseJson noPerm() {
-		return ResponseJson.of(R.of(401, "访问权限受限！"));
+		return ResponseJson.of(R.of(401, "操作权限受限！"));
 	}
 
 	public static ResponseJson notFound() {

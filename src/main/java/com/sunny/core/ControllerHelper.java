@@ -1,6 +1,6 @@
 package com.sunny.core;
 
-import com.sunny.core.base.BaseService;
+import com.sunny.core.base.service.BaseService;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(staticName = "all")
 public class ControllerHelper<E, D> {
 	
-	private BaseService<E, D> service;
+	private BaseService<E> service;
 	private E entity;
 	private D dto;
 	
