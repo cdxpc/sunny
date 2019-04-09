@@ -328,3 +328,12 @@ keyframes pace-spinner {
 .nav > li:hover .dropdown-menu {
 	display: block;
 }
+
+/** 复选框&单选框  **/
+.check-box,.radio-box {
+	display: inline-block;
+	cursor: pointer;
+	position: relative;
+	padding-right: 15px;
+	padding-top: 4px;
+}
