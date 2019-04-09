@@ -27,7 +27,6 @@ h6 {
 }
 
 h3, h4, h5 {
-    margin-top: 5px;
     font-weight: 600;
 }
 
@@ -180,7 +179,7 @@ body.body-small .navbar-top-links li:last-child {
 }
 
 .nav-header {
-    padding: 10px 40px;
+    padding: 15px 20px;
     /* background: url("../img/patterns/header-profile-skin-blue.png") no-repeat; */
     background: url("../img/patterns/header-profile.png") no-repeat;
 }
@@ -191,7 +190,7 @@ body.body-small .navbar-top-links li:last-child {
 }
 
 .nav>li.active {
-    border-left: 2px solid #3ba021;
+    border-right: 1px solid #ff6d2e;
     background: #18344e;
 }
 
@@ -269,16 +268,16 @@ body.body-small .navbar-top-links li:last-child {
 }
 
 .nav-second-level li a {
-    padding: 7px 15px 7px 10px;
-    padding-left: 52px;
+    padding: 10px 15px;
+    padding-left: 35px;
 }
 
 .nav-third-level li a {
-    padding-left: 62px;
+    padding-left: 42px;
 }
 
 .nav-second-level li:last-child {
-    margin-bottom: 10px;
+    margin-bottom: 1px;
 }
 
 body:not(.fixed-sidebar ):not(.canvas-menu ).mini-navbar .nav li:hover>.nav-second-level,.mini-navbar .nav li:focus>.nav-second-level {
@@ -405,6 +404,7 @@ body:not(.fixed-sidebar ):not(.canvas-menu ).mini-navbar .nav-second-level {
 
 body.mini-navbar .navbar-default .nav>li>a {
     font-size: 16px;
+    padding: 10px 15px;
 }
 
 body.mini-navbar .logo-element {
@@ -434,17 +434,17 @@ body.canvas-menu.mini-navbar #page-wrapper, body.canvas-menu.mini-navbar .footer
 
 body.fixed-sidebar .navbar-static-side, body.canvas-menu .navbar-static-side {
     position: fixed;
-    width: 220px;
+    width: 180px;
     z-index: 2001;
     height: 100%;
 }
 
 body.fixed-sidebar.mini-navbar .navbar-static-side {
-    width: 70px;
+    width: 50px;
 }
 
 body.fixed-sidebar.mini-navbar #page-wrapper {
-    margin: 0 0 0 70px;
+    margin: 0 0 0 50px;
 }
 
 body.body-small.fixed-sidebar.mini-navbar #page-wrapper {
@@ -493,9 +493,9 @@ body.body-small.fixed-sidebar.mini-navbar .navbar-static-side {
 
 .fixed-sidebar.mini-navbar .nav li:hover>.nav-second-level, .fixed-sidebar.mini-navbar .nav li:hover>a> span.nav-label {
     position: absolute;
-    left: 70px;
+    left: 50px;
     display: block;
-    min-width: 140px;
+    min-width: 120px;
     border-radius: 2px;
 }
 /*伸缩菜单结束*/
@@ -992,6 +992,11 @@ button.dim:active:before {
 
 .label-primary, .badge-primary {
     background-color: #1ab394;
+    color: #FFFFFF;
+}
+
+.label-link, .badge-link {
+    background-color: #3a78ef;
     color: #FFFFFF;
 }
 
@@ -3179,7 +3184,7 @@ video {
 #page-wrapper {
     padding: 0 15px;
     position: inherit;
-    margin: 0 0 0 220px;
+    margin: 0 0 0 180px;
 }
 
 .title-action {
@@ -6661,12 +6666,7 @@ body.rtls .top-navigation .footer.fixed, body.rtls.top-navigation .footer.fixed 
     background: #293846;
     color: #fff;
 }
-/*
- *
- *   SKIN blue 若依管理系统
- *   NAME - blue/purple
- *
-*/
+
 .skin-blue .minimalize-styl-2 {
     margin: 14px 5px 5px 30px;
 }
@@ -6804,12 +6804,7 @@ body.skin-blue {
     background: #0e9aef;
     color: #fff;
 }
-/*
- *
- *   SKIN Yellow 若依管理系统
- *   NAME - Yellow/purple
- *
-*/
+
 .skin-yellow .minimalize-styl-2 {
     margin: 14px 5px 5px 30px;
 }
