@@ -15,6 +15,14 @@ import com.sunny.core.auth.token.CaptchaUsernamePasswordToken;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 登陆用户密码次数限制匹配
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Slf4j
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
 
@@ -44,7 +52,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 		}
 		// 比较当前尝试的次数是否超过最大受限登录次数
 		if(retryCount.incrementAndGet() >= NumberUtils.toInt(maxRetryCount)) {
-			Long retryTimeBegin = Long.valueOf(System.currentTimeMillis());
+			Long retryTimeBegin = System.currentTimeMillis();
 			Long retry = retryTime.get(username);
 			// 如果超过了受限次数，则比较受限时间是否已过，如果还在受限时间范围内，限制登录
 			if(retryTimeBegin - retry < NumberUtils.toLong(interval)) {
@@ -60,7 +68,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
 			loginRecordCount.remove(username);
 			retryTime.remove(username);
 		} else {
-			retryTime.put(username, Long.valueOf(System.currentTimeMillis()));
+			retryTime.put(username, System.currentTimeMillis());
 		}
 		return match;
 	}

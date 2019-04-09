@@ -18,14 +18,22 @@ import com.sunny.core.constant.PlatformConstants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * 对shiro安全框架相关操作辅助类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ShiroHelper {
 	
-	public static Subject getSubject() {
+	private static Subject getSubject() {
 		return SecurityUtils.getSubject();
 	}
-	
-	public static Session getSession() {
+
+	private static Session getSession() {
 		return getSubject().getSession();
 	}
 	
@@ -56,23 +64,24 @@ public class ShiroHelper {
 		return getSubject().isPermittedAll(permissions);
 	}
 
-	public static Object getSessionAttribute(Object key) {
+	private static Object getSessionAttribute(Object key) {
 		return getSession().getAttribute(key);
 	}
 	
 	public static void setSessionAttribute(Object key, Object value) {
 		getSession().setAttribute(key, value);
 	}
-	
-	public static void removeSessionAttribute(Object key) {
+
+	private static void removeSessionAttribute(Object key) {
 		getSession().removeAttribute(key);
 	}
-	
-	public static String getHost() {
+
+	private static String getHost() {
 		return getSession().getHost();
 	}
-	
-	public static String getKaptcha(String key) {
+
+	// 从shiro session中获取验证码
+	private static String getKaptcha(String key) {
 		try {
 			String kaptcha = getSessionAttribute(key) == null ? null : getSessionAttribute(key).toString();
 			removeSessionAttribute(key);
@@ -90,7 +99,7 @@ public class ShiroHelper {
 		// 验证码校验是否开启，开启了则进行校验，未开启则不校验
 		if(captchaEnabled) {
 			// 验证码为空或验证码输入错误，返回错误提示
-			if(kaptcha == null || !captcha.equalsIgnoreCase(kaptcha)) {
+			if(null == kaptcha || !captcha.equalsIgnoreCase(kaptcha)) {
 				return ResponseJson.captchaError();
 			}
 		}

@@ -1,5 +1,13 @@
 package com.sunny.core.constant;
 
+/**
+ * 平台常量类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 public class PlatformConstants {
 
 	/**
@@ -83,5 +91,9 @@ public class PlatformConstants {
 	 */
 	public static final int PASSWORD_MIN_LENGTH = 5;
 	public static final int PASSWORD_MAX_LENGTH = 20;
+	
+	// 状态通用码值
+	public static final String STATUS_YES = "1";   // 1-是
+	public static final String STATUS_NO = "2";	// 2-否
 
 }

@@ -13,6 +13,14 @@ import com.sunny.core.constant.PlatformConstants;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * 验证码校验过滤器
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
 @Slf4j
 @Component
 public class CaptchaFilter extends AccessControlFilter {

@@ -1,13 +1,24 @@
 package com.sunny.core.persistence;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import javax.persistence.OrderBy;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * 数据库实体类基类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
+@Getter
+@Setter
 public abstract class DbEntity extends Entity {
 	
 	// 排序字段
+	@OrderBy
 	private Integer sort;
 	// 记录删除标志（Y-逻辑删除， N-未删除）
 	protected String delFlag = "N"; // 默认操作未删除的数据

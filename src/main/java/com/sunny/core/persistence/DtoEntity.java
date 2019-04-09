@@ -14,13 +14,21 @@ import com.sunny.core.SpringContextHolder;
 import com.sunny.core.auth.Principal;
 import com.sunny.core.auth.ShiroHelper;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+/**
+ * 实体展示类基类
+ *
+ * @author cdxpc <cdxpc2018@163.com>, <br/>
+ * 		   kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月13日
+ * @since 1.0.0v
+ */
+@Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true, value = { "handler" })
-public class DtoEntity extends Entity implements Serializable {
+public class DtoEntity extends Changer implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	
@@ -56,12 +64,16 @@ public class DtoEntity extends Entity implements Serializable {
 				this.lastUpdateBy = p.getLoginName() + ":" + p.getRealName();
 				this.lastUpdateTime = date;
 			default:
-				this.delFlag = SpringContextHolder.getBean(SunnyConfig.class).getPros().getOrDefault(pref + ".delFlag", "N"); // 默认是未删除的数据
-				this.status = SpringContextHolder.getBean(SunnyConfig.class).getPros().get(pref + ".status"); // 默认是有效的数据
+				if(this.delFlag == null) {
+					this.delFlag = SpringContextHolder.getBean(SunnyConfig.class).getPros().getOrDefault(pref + ".delFlag", "N"); // 默认是未删除的数据
+				}
+				if(this.status == null) {
+					this.status = SpringContextHolder.getBean(SunnyConfig.class).getPros().get(pref + ".status"); // 默认是有效的数据
+				}
 				this.dataScope = dataScope;
 				break;
 			}
 		}
 	}
-
+	
 }
