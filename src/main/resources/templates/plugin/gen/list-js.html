@@ -1,0 +1,163 @@
+<script type="text/javascript">
+$(function() {
+	   
+	$.table.init(roleOptions);
+	
+	$("#column-table").bootstrapTable({
+		method: 'get',
+		dataType: 'json',
+		striped: true,
+		cache: false,
+		pagination: false,
+		url: prefix_column + "/data",
+		queryParams: function(params) {
+            return {'dbId': $("#dbId").val(), 'tableName': $("#tableName").val()};
+		},
+		sidePagination: "server",
+	    columns: [{
+	        field: 'columnName',
+	        title: '列名'
+	    },
+	    {
+	        field: 'columnComment',
+	        title: '列说明'
+	    },
+	    {
+	        field: 'dataType',
+	        title: '列类型'
+	    }]
+	});
+	
+    // 隐藏右边内容
+    $("#hiddenRightButton").on('click', function(){
+		$("#right").hide();
+	    $("#left").attr("class", "col-sm-12");
+	});
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+});
+
+var canShow_table = true;	// 可展示对应的值列表数据
+var prefix_table = ctx + "gen/table";
+
+var roleOptions = {
+	tableId: "table-table",
+    url: prefix_table + "/data",
+    updateUrl: prefix_table + "/edit/{id}",
+    saveUrl: prefix_table + "/save",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "代码生成",
+    search: false,
+    showExport: false,
+    columns: [{
+        field: 'tableName',
+        title: '数据库表名',
+    },
+    {
+        field: 'tableComment',
+        title: '数据库表说明',
+        formatter: function(value, row, index) {
+            if(canShow_table) {
+                var dbId = row.dbId;
+                var tableName = row.tableName;
+                var tableComment = row.tableComment;
+                return '<a href="#" title="显示列" onclick="show(\'' + dbId + '\',\''+ tableName + '\',\'' + tableComment + '\')">' + value + '</a>';
+            }
+            return value;
+        }
+    },
+    {
+        field: 'dbName',
+        title: '所属数据库'
+    },
+    {
+        field: 'produced',
+        title: '是否已生成过代码',
+        formatter: function(value, row, index) {
+       		var produced = row.produced;
+       		if(produced === '2') {
+       			return '未生成';
+       		}
+       		return '已生成';
+        }
+    },
+    {
+        field: 'status',
+        title: '状态',
+        align: "center",
+        width: '80px',
+	    formatter: function(value, row, index) {
+	    	var status = row.status;
+	    	if(status === "1"){
+	    		return '<a class="btn btn-info btn-xs"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(status === "2"){
+	    		return '<a class="btn btn-danger btn-xs"><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+	    }
+    },
+    {
+        title: '操作',
+        width: '70px',
+        align: "center",
+        formatter: function(value, row, index) {
+        	var id = row.id;
+            if(row.status === '1') {
+            	var actions = [];
+            	if(row.produced !== '2') {
+	            	actions.push('<a class="btn btn-primary btn-xs" href="#" title="重新生成" onclick="redo(\'' + id + '\')"><i class="fa fa-mail-forward"></i></a> ');
+            	} else {
+            		actions.push('<a class="btn btn-success btn-xs" href="#" title="生成代码" onclick="down(\'' + id + '\')"><i class="fa fa-download"></i></a> ');            		
+            	}
+	            return actions.join('');
+            }
+            return '<p class="btn btn-danger btn-xs" title="无法操作"><i class="fa fa-ban"></i></p>';
+        }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 生成代码
+function down(id) {
+	$.operate.down($.table, id);
+}
+
+// 重新生成代码
+function redo(id) {
+	$.modal.confirm("此表所对应的代码已经生成过，确定要重新生成吗？", function() {
+		$.operate.down($.table, id);
+	});
+}
+
+//============ column ==========
+
+var canLook_column = true;	// 可查看详情
+var prefix_column = ctx + "gen/column";
+
+/*查看某个字典类型下的值列表*/
+function show(dbId, tableName, tableComment) {
+    $("#left").attr("class", "col-sm-6");
+    setTimeout(function(){
+        $("#right").fadeIn(300);
+    },300);
+    $("#dbId").val(dbId);
+    $("#tableName").val(tableName);
+    $("#table").html("&nbsp;[" + tableComment + "]");
+
+    $("#column-table").bootstrapTable("refresh");
+}
+</script>
