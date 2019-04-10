@@ -78,7 +78,7 @@ public class LoginService {
 
 	public Set<String> findMenusByUserId(String userId) {
 		// 使用set能够去重
-		Set<String> perms = new HashSet<String>();
+		Set<String> perms = new HashSet<>();
 		List<Menu> menus = menuService.findMenusByUserId(userId);
 		if(CollectionUtils.isNotEmpty(menus)) {
 			for(Menu menu : menus) {

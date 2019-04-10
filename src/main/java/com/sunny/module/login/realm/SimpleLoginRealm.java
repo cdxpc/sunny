@@ -38,6 +38,7 @@ public class SimpleLoginRealm extends AuthorizingRealm {
 			principal.setId(user.getUserId());
 			principal.setRealName(user.getRealName());
 			principal.setSalt(user.getSalt());
+			principal.setUserType(user.getUserType());
 		}
 		
 		SimpleAuthenticationInfo authInfo = new SimpleAuthenticationInfo(principal, 

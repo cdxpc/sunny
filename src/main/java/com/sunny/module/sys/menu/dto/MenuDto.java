@@ -4,11 +4,11 @@ import java.util.List;
 
 import com.sunny.core.persistence.DtoEntity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Getter
+@Setter
 public class MenuDto extends DtoEntity {
 	
 	private static final long serialVersionUID = 1L;
@@ -20,11 +20,12 @@ public class MenuDto extends DtoEntity {
 	private String menuType;
 	private String perms;
 	private String visible;
+
+	private String parentId;	// 上级机构id
+	private String parentName;
+	private String treeNode;	// 树节点   1-树枝，  2-树叶     => 树枝不展示删除按钮，树叶展示删除按钮
 	
-	private String parentId;
-	
-	private MenuDto parent;
-	
+	//private MenuDto parent;
 	private List<MenuDto> children;
 
 }

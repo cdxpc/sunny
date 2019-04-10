@@ -9,7 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.sunny.core.auth.ShiroHelper;
-import com.sunny.core.base.BaseController;
+import com.sunny.core.base.controller.BaseController;
 import com.sunny.core.constant.RestApiConstants;
 import com.sunny.core.util.BeanConvertUtils;
 import com.sunny.module.sys.menu.MenuTree;
@@ -54,7 +54,7 @@ public class IndexController extends BaseController<Object> {
     	
     	// 通过用户获取菜单
     	List<Menu> menus = menuService.findMenusByUserId(userId);
-    	List<MenuDto> menuDtos = new ArrayList<MenuDto>();
+    	List<MenuDto> menuDtos = new ArrayList<>();
 		try {
 			menuDtos = BeanConvertUtils.Entitys2Dtos(menuDtos, MenuDto.class, menus);
 		} catch (Exception e) {

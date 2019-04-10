@@ -17,7 +17,7 @@ import com.google.code.kaptcha.Producer;
 import com.sunny.core.ResponseJson;
 import com.sunny.core.ServletHelper;
 import com.sunny.core.auth.ShiroHelper;
-import com.sunny.core.base.BaseController;
+import com.sunny.core.base.controller.BaseController;
 import com.sunny.core.constant.RestApiConstants;
 import com.sunny.core.util.AjaxUtils;
 import com.sunny.core.util.json.JacksonUtils;
@@ -44,8 +44,7 @@ public class LoginController extends BaseController<Object> {
 			response.setContentType("image/jpeg");
 			
 			String type = ServletHelper.getParameter("type");
-			String capStr = null;
-			String code = null;
+			String capStr, code = null;
 			BufferedImage bi = null;
 			if("math".equalsIgnoreCase(type)) {
 				// 算术算法方式，生成算术验证码
@@ -60,7 +59,9 @@ public class LoginController extends BaseController<Object> {
 			}
 			ShiroHelper.setSessionAttribute(Constants.KAPTCHA_SESSION_KEY, code);
 			out = response.getOutputStream();
-			ImageIO.write(bi, "jpg", out);
+			if(bi != null) {
+				ImageIO.write(bi, "jpg", out);
+			}
 		} catch (Exception e) {
 			log.error("验证码生成出现异常，异常信息为：" + e.getMessage());
 		} finally {

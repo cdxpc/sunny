@@ -3,13 +3,14 @@ package com.sunny.module.sys.menu.service.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sunny.module.common.CudServiceImpl;
-import com.sunny.module.sys.menu.dto.MenuDto;
+import com.sunny.core.base.service.TreeServiceImpl;
+import com.sunny.module.TreeHelper;
 import com.sunny.module.sys.menu.entity.Menu;
 import com.sunny.module.sys.menu.mapper.MenuMapper;
 import com.sunny.module.sys.menu.service.MenuService;
@@ -19,7 +20,7 @@ import com.sunny.module.sys.relation.mapper.RoleMenuMapper;
 import com.sunny.module.sys.relation.mapper.UserRoleMapper;
 
 @Service("menuService")
-public class MenuServiceImpl extends CudServiceImpl<Menu, MenuDto, MenuMapper> implements MenuService {
+public class MenuServiceImpl extends TreeServiceImpl<Menu, MenuMapper> implements MenuService {
 
 	@Autowired
 	private UserRoleMapper userRoleMapper;
@@ -28,7 +29,7 @@ public class MenuServiceImpl extends CudServiceImpl<Menu, MenuDto, MenuMapper> i
 	
 	@Override // 都是单表查询，不使用多表联查
 	public List<Menu> findMenusByUserId(String userId) {
-		List<Menu> Menus = Collections.emptyList();
+		List<Menu> menus = Collections.emptyList();
 		UserRole ur = UserRole.of();
 		ur.setUserId(userId);
 		List<UserRole> urs = userRoleMapper.select(ur);
@@ -47,12 +48,12 @@ public class MenuServiceImpl extends CudServiceImpl<Menu, MenuDto, MenuMapper> i
 			if(CollectionUtils.isNotEmpty(rmAll)) {
 				String menuIds = "";
 				for(RoleMenu rm : rmAll) {
-					menuIds += rm.getMenuId() + ",";
+					menuIds += "'" + rm.getMenuId() + "',";
 				}
-				Menus = mapper.selectByIds(menuIds.substring(0, menuIds.length() - 1));
+				menus = mapper.selectByIds(menuIds.substring(0, menuIds.length() - 1));
 			}
 		}
-		return Menus;
+		return filter(menus);
 	}
 	
 	// 去重
@@ -67,5 +68,21 @@ public class MenuServiceImpl extends CudServiceImpl<Menu, MenuDto, MenuMapper> i
 			}
 		}
 	}
+	
+	// 过滤，将状态为禁用、隐藏的数据过滤掉       通过代码过滤好还是数据库查询加过滤条件好？？？  XXX 需衡量
+	private List<Menu> filter(List<Menu> menus) {
+		List<Menu> newMenus = new ArrayList<>();
+		if(menus != null && menus.size() > 0) {
+			menus.stream().filter(m -> "1".equals(m.getStatus()) && "1".equals(m.getVisible())).forEach(m -> newMenus.add(m));
+		}
+		return newMenus;
+	}
+
+	@Override
+	protected List<Map<String, Object>> toTree(List<Menu> all) {
+		return TreeHelper.toMenuTree(all, false, null);
+	}
+
+
 
 }
