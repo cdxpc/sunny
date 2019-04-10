@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Sunny管理平台-机构管理</title>
+	<link th:replace="@{include/treetable-list-header}" rel="stylesheet" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form id="org-form" th:object="${org}" class="form-horizontal m" >
+			<input type="hidden" name="orgId" th:field="*{orgId}" />
+			<input id="treeId" type="hidden" name="parentId" th:field="*{parentId}" />
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">上级机构：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" id="treeName" onclick="selectTree()" readonly th:field="*{parentName}"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">机构编号：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" name="orgCode" th:field="*{orgCode}" placeholder="请输入机构编号，机构编号不可重复，不可为空"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">机构名称：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" name="orgName" th:field="*{orgName}" placeholder="请输入机构名称，机构名称可重复，不可为空"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">机构大类：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<select name="orgMainCategroy" class="form-control required">
+	                    <option th:each="dict : ${orgMainCategroys}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{orgMainCategroy}"></option>
+	                </select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">树节点：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<div class="radio-box" th:each="dict : ${treeNodes}">
+						<input class="required" type="radio" th:id="${dict.dictValueId}" name="treeNode" th:value="${dict.dictValue}" th:field="*{treeNode}">
+						<label th:for="${dict.dictValueId}" th:text="${dict.dictLabel}"></label>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">机构描述：</label>
+				<div class="col-sm-8">
+					<textarea class="form-control" rows="5" name="remarks" th:field="*{remarks}" placeholder="请输入机构描述，描述信息不能超过500字数，可为空"></textarea>
+				</div>
+			</div>
+			<!-- <div class="form-group">
+				<label class="col-sm-3 control-label">状态：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<div class="onoffswitch">
+                         <input type="checkbox" th:checked="*{status == '2' ? false : true}" class="onoffswitch-checkbox" id="status" name="status">
+                         <label class="onoffswitch-label" for="status">
+                             <span class="onoffswitch-inner"></span>
+                             <span class="onoffswitch-switch"></span>
+                         </label>
+                     </div>
+				</div>
+			</div> -->
+		</form>
+	</div>
+</body>
+<script th:inline="javascript">
+$(function() {
+	validateForm = $.form.validate("org-form");
+});
+
+var $table = null;
+function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+	$table = table;
+	if(validateForm.form()){
+		$("#org-form").submit();
+	}
+} 
+
+function selectTree() {
+	var treeId = $("#treeId").val();
+	if(treeId) {
+	    var options = {
+			title: '机构选择',
+			width: "400",
+			url: ctx + "sys/org/tree/" + treeId,
+			callBack: doSelect
+		};
+		$.modal.openOptions(options);
+	} else {
+		$.modal.alertError("父节点不能选择");
+	}
+}
+
+function doSelect(index, layero){
+	/* var tree = layero.find("iframe")[0].contentWindow.$._tree;
+	if ($.tree.notAllowLastLevel(tree)) {
+			var body = layer.getChildFrame('body', index);
+			$("#treeId").val(body.find('#treeId').val());
+			$("#treeName").val(body.find('#treeName').val());
+			layer.close(index);
+	} */
+}
+</script>
+</html>

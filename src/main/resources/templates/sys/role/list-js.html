@@ -1,0 +1,287 @@
+<script th:inline="javascript">
+$(function() {
+	   
+	$.table.init(roleOptions);
+	
+	$("#user-table").bootstrapTable({
+		method: 'get',
+		dataType: 'json',
+		striped: true,
+		cache: false,
+		pagination: false,
+		url: prefix_user + "/getUserByRoleId",
+		queryParams: function(params) {
+			return {roleId: $("#roleId").val()};
+		},
+		sidePagination: "server",
+	    columns: [{
+	        field: 'userId',
+	        title: '用户ID',
+	     	visible: false
+	    },
+	    {
+	        field: 'userName',
+	        title: '用户名称'
+	    },
+	    {
+	        title: '操作',
+	        align: 'center',
+	        formatter: function(value, row, index) {
+	        	var id = row.userId;
+	        	var actions = [];
+	            if(canRemove_user){
+	                actions.push('<a class="btn btn-primary btn-xs" href="#" title="删除操作" onclick="removeValue(\'' + id + '\')"><i class="fa fa-remove"></i></a> ');
+	            }return actions.join('');
+	        }
+	    }]
+	});
+	
+    // 隐藏右边内容
+    $("#hiddenRightButton").on('click', function(){
+		$("#right").hide();
+	    $("#left").attr("class", "col-sm-12");
+	});
+    
+    // 删除时，按钮可以点击
+    $('#role-table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            				 'check-all.bs.table uncheck-all.bs.table', function () {
+        $('#remove').prop('disabled', ! $('#role-table').bootstrapTable('getSelections').length);
+    });
+    
+    // 新增按钮
+    $("#add").on('click', addRole);
+    
+    // 删除按钮
+    $("#remove").on('click', batRemoveRole);
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+    // 
+    //$("#dictValueButton").on('click', addValue);
+    
+});
+
+var canCreate_role = true;	// 可创建数据
+var canLook_role = true;	// 可查看详情
+var canEdit_role = true;	// 可编辑数据
+var canRemove_role = true;	// 可删除数据
+var canShow_role = true;	// 可展示对应的值列表数据
+var canAddMenu_role = true; // 可设置权限
+var prefix_role = ctx + "sys/role";
+
+var pageSize = null;
+var pageNum = null;
+var total = null;
+
+var roleOptions = {
+	tableId: "role-table",
+    url: prefix_role + "/data",
+    createUrl: prefix_role + "/add",
+    updateUrl: prefix_role + "/edit/{id}",
+    saveUrl: prefix_role + "/save",
+    removeUrl: prefix_role + "/remove",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "角色",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	dblClick(row.roleId);
+    }, 
+    columns: [{
+        checkbox: true
+    },
+    {
+        field: 'roleName',
+        title: '角色名称',
+        formatter: function(value, row, index) {
+        	if(canLook_role) {
+        		return '<a href="#" title="查看详情" onclick="lookRole(\'' + row.roleId + '\')">' + value + '</a>';
+        	}
+        	return value;
+        }
+    },
+    {
+        field: 'roleCode',
+        title: '角色编号',
+        formatter: function(value, row, index) {
+        	if(canShow_role) {
+        		var id = row.roleId;
+        		var roleName = row.roleName;
+        		return '<a href="#" title="显示已分配用户列表" onclick="showUsers(\'' + id + '\',\'' + roleName + '\')">' + value + '</a>';
+        	}
+        	return value;
+        }
+    },
+    {
+        field: 'sort',
+        title: '排序',
+        formatter: function(value,row,index){
+        	var up = '<a href="javascript:;" onclick="sortRole('+index+', true)"><i class="fa fa-long-arrow-up" title="上移"></i></a>&nbsp;&nbsp;';
+        	var down = '<a href="javascript:;" onclick="sortRole('+index+', false)"><i class="fa fa-long-arrow-down" title="下移"></i></a>';
+        	var params = $("#role-table").bootstrapTable("getOptions");
+        	pageSize = params.pageSize;
+        	pageNum = params.pageNumber;
+        	total = params.totalRows;
+        	if(total === 1) {
+        		return '-';
+        	} else {
+	        	if(((pageNum - 1) * pageSize + index) == 0) {
+	        		up = '-&nbsp;&nbsp;';
+				} else if(((pageNum - 1) * pageSize + index) == (total - 1))  {
+	        		down = '-';
+				}
+        	}
+        	return up + down;
+        }
+    },
+    {
+        field: 'status',
+        title: '状态',
+        align: "center",
+        width: '80px',
+	    formatter: function(value, row, index) {
+	    	var status = row.status;
+	    	if(status === "1"){
+	    		return '<a href="#" onclick="unuse(\'' + row.roleId + '\')" class="btn btn-info btn-xs" title="可禁用"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(status === "2"){
+	    		return '<a href="#" onclick="inuse(\'' + row.roleId + '\')" class="btn btn-danger btn-xs" title="可启用"><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+	    }
+    },
+    {
+        title: '操作',
+        width: '70px',
+        formatter: function(value, row, index) {
+        	var id = row.roleId;
+        	var hasUsers = '2'; 
+            if(row.status === '1') {
+            	var actions = [];
+	            if(canAddMenu_role) {
+	            	actions.push('<a class="btn btn-primary btn-xs" href="#" title="设置权限" onclick="addMenus(\'' + id + '\')"><i class="fa fa-key"></i></a> ');
+	            }
+	            if(canRemove_role && hasUsers == '2'){
+	                actions.push('<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="removeRole(\'' + id + '\')"><i class="fa fa-remove"></i></a> ');
+	            }
+            	return actions.join('');
+            }
+            return '<p class="btn btn-danger btn-xs" title="无法操作"><i class="fa fa-ban"></i></p>';
+        }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function lookRole(id) {
+	$.operate.details($.table, id);
+}
+
+// 双击行编辑数据
+function dblClick(id) {
+	if(canEdit_role) { // 有编辑权限才能修改
+		$.operate.edit($.table, id);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+// 新增字段类型
+function addRole() {
+	$.operate.add($.table);
+}
+
+// 批量删除
+function batRemoveRole() {
+	$.operate.batRemove($.table);
+}
+
+// 删除
+function removeRole(id) {
+	$.operate.remove($.table, id);
+}
+
+//上移下移  -- 送给后台几个参数，后台自动完成排序号的交换
+function sortRole(index, isUp) {
+	var param = $("#searchForm").serializeJSON();
+	$.operate.doChange($.table, prefix_role, index, isUp, true, param);
+}
+
+//禁用
+function unuse(id) {
+	$.operate.unuse($.table, {'roleId' : id});
+}
+
+// 启用
+function inuse(id) {
+	$.operate.inuse($.table, {'roleId' : id});
+}
+
+//============ user ==========
+
+var canLook_user = true;	// 可查看详情
+var prefix_user = ctx + "sys/user";
+
+/*查看某个字典类型下的值列表*/
+function showUsers(id, roleName) {
+	$("#left").attr("class", "col-sm-6");
+	setTimeout(function(){
+		$("#right").fadeIn(300);
+	},300);
+	$("#roleId").val(id);
+	$("#role").html("&nbsp;[" + roleName + "]");
+	
+	$("#user-table").bootstrapTable("refresh");
+}
+
+/* function addValue() {
+	var typeKey = $("#dictTypeKey").val();
+	var url = prefix_value + "/add/" + typeKey;
+	$.modal.open($("#user-table"), "新增 [字典值]", url);
+}
+
+function editValue(id) {
+	if(canEdit_value) { // 有编辑权限才能修改
+		var url = prefix_user + "/edit/" + id;
+		$.modal.open($("#user-table"), "修改 [字典值]", url);
+		$.table.refresh();
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+function removeValue(id) {
+	$.modal.confirm("确定删除该条字典值信息吗？", function() {
+		var config = {
+			url : prefix_user + "/remove",
+			type : 'post',
+			dataType : 'json',
+			data : {
+				"id" : id
+			},
+			success : function(data) {
+				if (data.result.code === 200) {
+					$.modal.msgSuccess(data.result.message);
+					$("#user-table").bootstrapTable("refresh");
+					$.table.refresh();
+				} else {
+					$.modal.msgError(data.result.message)
+				}
+			}
+		};
+		$.ajax(config);
+	});
+} */
+</script>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sunny管理平台-角色管理</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+	<script th:replace="@{sys/role/list-js}"></script>
+</head>
+<body>
+	<div class="wrapper wrapper-content">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h5 class="panel-title">角色列表</h5>
+			</div>
+			<div class="panel-body">
+				<div class="row">
+					<div id="left" class="col-sm-12">
+						<!-- 搜索 -->
+						<div class="accordion-group">
+							<div id="searchCollapsePanel" class="accordion-body collapse">
+								<div class="accordion-inner">
+									<form id="searchForm" class="form form-horizontal well clearfix">
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<label class="label-item single-overflow pull-left" title="角色名称：">角色名称：</label> 
+											<input name="roleName" class="form-control m-b" placeholder="输入角色名称，可模糊查询"/>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<label class="label-item single-overflow pull-left" title="角色编号">角色编号：</label> 
+											<input name="roleCode" class="form-control m-b"  placeholder="输入角色编号，可精确查询"/>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-4">
+											<div style="margin-top: 24px">
+												<a id="search" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a>
+												<a id="reset" class="btn btn-primary btn-rounded  btn-bordered btn-sm"><i class="fa fa-refresh"></i> 重置</a>
+											</div>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+						<!-- 工具栏 -->
+						<div id="toolbar">
+							<a id="add" class="btn btn-primary"><i class="glyphicon glyphicon-plus"></i> 新建</a>
+							<button id="remove" class="btn btn-danger" disabled><i class="glyphicon glyphicon-remove"></i> 删除</button>
+							<a class="accordion-toggle btn btn-default " data-toggle="collapse" data-parent="#accordion2" href="#searchCollapsePanel">
+								<i class="fa fa-search"></i> 检索
+							</a>
+						</div>
+						<!-- 表格 -->
+						<table id="role-table" data-toolbar="#toolbar" data-id-field="roleId"></table>
+						
+					</div>
+
+					<div id="right" class="panel panel-default col-sm-6" style="display: none">
+						<div class="panel-heading">
+							<h4 class="panel-title">
+								<label>已分配用户列表，所属角色: </label><font id="role" color="blue"></font>
+								<input type="hidden" id="roleId" />
+							</h4>
+						</div>
+						<div class="panel-body">
+							<div id="userToolbar">
+								<button id="dictValueButton" class="btn btn-outline btn-primary" title="分配用户">
+									<i class="fa fa-plus-circle"></i> 分配用户
+								</button>
+								<button id="hiddenRightButton" class="btn btn-outline btn-primary" title="影藏">
+									<i class="fa fa-rocket"></i> 隐藏
+								</button>
+							</div>
+							<!-- 表格 -->
+							<table id="user-table" data-toolbar="#userToolbar" data-id-field="userId"></table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

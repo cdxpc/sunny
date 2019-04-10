@@ -1,0 +1,178 @@
+<script th:inline="javascript">
+$(function() {
+	
+	$.dictHelper.post(areaTypes, 'dict_area_type');
+	$.dictHelper.post(treeNodes, 'dict_tree_node');
+	
+	$.treeTable.init(orgOptions);
+	
+	// 删除时，按钮可以点击
+    $('#bootstrap-treeTable').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            				 'check-all.bs.table uncheck-all.bs.table', function () {
+        $('#remove').prop('disabled', ! $('#bootstrap-treeTable').bootstrapTable('getSelections').length);
+    });
+    
+    // 新增按钮
+    $("#add").on('click', add);
+    
+    // 删除按钮
+    //$("#remove").on('click', batRemove);
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+	
+});
+
+var areaTypes = new Map();
+var treeNodes = new Map();
+var canLook = true;
+var prefix_area = ctx + "sys/area";
+
+var orgOptions = {
+	id: "areaId",
+    parentId: "parentId",
+    url: prefix_area + "/data",
+    createUrl: prefix_area + "/add/",
+    updateUrl: prefix_area + "/edit/{id}",
+    saveUrl: prefix_area + "/save",
+    removeUrl: prefix_area + "/remove",
+    createSubUrl: prefix_area + "/addSub/{id}",
+    modifyStatusUrl: prefix_area + "/modifyStatus",
+    modalName: "地区",
+    columns: [{
+        field: 'areaName',
+        title: '地区名称',
+        width: '420px'
+    },
+    {
+        field: 'areaCode',
+        title: '地区编号',
+        align: "center",
+        //width: '120px',
+        formatter: function(row, index) {
+        	if(canLook) {
+        		return '<a href="#" title="查看详情" onclick="look(\'' + row.areaId + '\')">' + row.areaCode + '</a>';
+        	}
+        	return row.orgCode;
+        }
+    },
+    {
+        field: 'areaType',
+        title: '地区类型',
+        align: "center",
+        //width: '100px',
+        formatter: function(row, index) {
+            return $.dictHelper.get(areaTypes, row.areaType);
+        }
+    },
+    {
+        field: 'treeNode',
+        title: '树节点',
+        align: "center",
+        //width: '70px',
+        formatter: function(row, index) {
+            return $.dictHelper.get(treeNodes, row.treeNode);
+        }
+    },
+    /* {
+        field: 'sort',	// TODO 排序功能暂时还未实现
+        title: '排序',
+        align: "center",
+        width: '60px',
+        formatter: function(row, index) {
+           return '<a class="fa fa-long-arrow-down" title="下移"></a>   <a class="fa fa-long-arrow-up" title="上移"></a>';
+        }
+    }, */
+    {
+        field: 'remarks',
+        title: '机构描述'
+    },
+    {
+        field: 'createTime',
+        title: '创建时间',
+        align: "center"
+    },
+    {
+        field: 'status',
+        title: '状态',
+        align: "center",
+        //width: '80px',
+	    formatter: function(row, index) {
+	    	var status = row.status;
+	    	if(status === "1"){
+	    		return '<a href="#" onclick="unuse(\'' + row.areaId + '\')" class="btn btn-info btn-xs" title="可禁用"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(status === "2"){
+	    		return '<a href="#" onclick="inuse(\'' + row.areaId + '\')" class="btn btn-danger btn-xs" title="可启用"><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+	    }
+    },
+    {
+        title: '操作',
+        width: '90px',
+        formatter: function(row, index) {
+            if (row.parentId !== 0) {
+                var actions = [];
+                if(row.status === '1') {
+	                actions.push('<a class="btn btn-primary btn-xs" title="添加子机构" href="#" onclick="addSub(\'' + row.areaId + '\')"><i class="fa fa-plus"></i></a> ');
+	                actions.push('<a class="btn btn-success btn-xs" title="编辑机构" href="#" onclick="edit(\'' + row.areaId + '\')"><i class="fa fa-edit"></i></a> ');
+	                if (row.treeNode === '2') {
+	                	actions.push('<a class="btn btn-danger btn-xs" title="删除机构" href="#" onclick="remove(\'' + row.areaId + '\')"><i class="fa fa-remove"></i></a>');
+	                }
+	                return actions.join('');
+                }
+                return '<p class="btn btn-danger btn-xs" title="无法操作"><i class="fa fa-ban"></i></p>';
+            } else {
+                return "";
+            }
+        }
+    }]
+};
+
+//搜索
+function search() {
+	$.treeTable.search("searchForm");
+}
+
+// 重置
+function reset() {
+  	$.treeTable.reset("searchForm");
+}
+
+// 查看机构详情
+function look(id) {
+	$.operate.details($.treeTable, id);
+}
+
+// 新建机构
+function add() {
+	$.operate.add($.treeTable);
+}
+
+// 添加子机构
+function addSub(id) {
+	$.operate.addSub($.treeTable, id);
+}
+
+// 编辑机构
+function edit(id) {
+	$.operate.edit($.treeTable, id);
+}
+
+// 删除机构
+function remove(id) {
+	$.operate.remove($.treeTable, id);
+}
+
+// 禁用
+function unuse(id) {
+	$.operate.unuse($.treeTable, {'areaId' : id});
+}
+
+// 启用
+function inuse(id) {
+	$.operate.inuse($.treeTable, {'areaId' : id});
+}
+</script>
