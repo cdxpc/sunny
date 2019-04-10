@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>Sunny管理平台-岗位管理</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form id="post-form" th:object="${user}" class="form-horizontal m" >
+			<input type="hidden" name="userId" th:value="*{userId}"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">用户登陆名：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" name="loginName" th:field="*{loginName}" placeholder="请输入用户登陆名，登陆名不可重复"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">用户姓名：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input class="form-control required" type="text" name="realName" th:field="*{realName}" placeholder="请输入用户姓名，姓名可重复"/>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<script th:inline="javascript">
+var $table = null;
+function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+	$table = table;
+	if(validateForm.form()){
+		$("#post-form").submit();
+	}
+} 
+
+$(function() {
+	validateForm = $.form.validate("post-form");
+});
+</script>
+</html>

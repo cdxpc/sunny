@@ -1,0 +1,28 @@
+<script th:inline="javascript">
+$(function() {
+	   
+	$.table.init(postOptions);
+    
+    // 删除时，按钮可以点击
+    $('#post-table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            				 'check-all.bs.table uncheck-all.bs.table', function () {
+        $('#remove').prop('disabled', ! $('#post-table').bootstrapTable('getSelections').length);
+    });
+    
+    // 新增按钮
+    $("#add").on('click', add);
+    
+    // 删除按钮
+    $("#remove").on('click', batRemove);
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+});
+
+
+
+</script>

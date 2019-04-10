@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>Sunny管理平台-用户管理</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form id="user-form" th:object="${user}" class="form-horizontal m" >
+			<input type="hidden" name="userId" th:value="*{userId}"/>
+			<input type="hidden" id="treeId" name="orgId" th:value="*{orgId}"/>
+			<div class="form-group">
+				<label class="col-sm-2 control-label ">登陆名：<font color="red">*</font></label>
+				<div class="col-sm-4">
+					<input class="form-control" type="text" name="loginName" th:field="*{loginName}" placeholder="请输入用户登陆名，不可重复"/>
+				</div>
+				<!-- <label class="col-sm-2 control-label ">登录密码：</label>
+				<div class="col-sm-4">
+					<input class="form-control" type="password" name="password" th:field="*{password}" placeholder="请输入登录密码，可为空"/>
+				</div> -->
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label ">用户类型：<font color="red">*</font></label>
+				<div class="col-sm-4">
+					<select id="userType" name="userType" class="form-control required">
+	                    <option th:each="dict : ${userTypes}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{userType}"></option>
+	                </select>
+				</div>
+				<label class="col-sm-2 control-label ">所属机构：<font color="red">*</font></label>
+				<div class="col-sm-4">
+					<input class="form-control" type="text" name="orgName" onclick="selectOrgTree()" readonly id="treeName" th:field="*{orgName}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label ">用户姓名：<font color="red">*</font></label>
+				<div class="col-sm-4">
+					<input class="form-control" type="text" name="realName" th:field="*{realName}" placeholder="请输入用户姓名，可重复"/>
+				</div>
+				<label class="col-sm-2 control-label ">性别：<font color="red">*</font></label>
+				<div class="col-sm-4">
+					<select id="gender" name="gender" class="form-control required">
+	                    <option th:each="dict : ${genders}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{gender}"></option>
+	                </select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label ">手机号码：</label>
+				<div class="col-sm-4">
+					<input class="form-control" type="text" name="mobile" th:field="*{mobile}" placeholder="请输入手机号码，可为空"/>
+				</div>
+				<label class="col-sm-2 control-label ">邮箱：</label>
+				<div class="col-sm-4">
+					<input class="form-control" type="text" name="email" th:field="*{email}" placeholder="请输入电子邮箱，可为空"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label ">描述信息：</label>
+				<div class="col-sm-10">
+					<textarea rows="8" cols="83" name="remark" th:field="*{remark}" placeholder="请输入用户描述信息，可为空"></textarea>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<script th:inline="javascript">
+var $table = null;
+function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+	$table = table;
+	if(validateForm.form()){
+		$("#user-form").submit();
+	}
+} 
+
+var options = {
+		rules:{
+			loginName:{
+    			required:true,
+    		},
+    		realName:{
+    			required:true,
+    		},
+    		mobile:{
+    			isMobile:true,
+    		},
+    		email:{
+    			email:true,
+    		}
+    	},
+    	messages: {}	
+}
+
+$(function() {
+	validateForm = $.form.validate("user-form", options);
+});
+
+function selectOrgTree() {
+	var treeId = $("#treeId").val();
+	if(treeId) {
+	    var options = {
+			title: '机构选择',
+			width: "400",
+			url: ctx + "sys/org/tree/" + treeId,
+			callBack: doSelect
+		};
+		$.modal.openOptions(options);
+	} else {
+		$.modal.alertError("父节点不能选择");
+	}
+}
+
+function doSelect(index, layero){
+	var tree = layero.find("iframe")[0].contentWindow.$._tree;
+	// console.log(tree)
+	if ($.tree.notAllowLastLevel(tree)) {
+		var body = layer.getChildFrame('body', index);
+		console.log(body)
+		$("#treeId").val(body.find('#treeId').val());
+		$("#treeName").val(body.find('#treeName').val());
+		layer.close(index);
+	}
+}
+</script>
+</html>

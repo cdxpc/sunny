@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Sunny管理平台-用户绑定角色</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+</head>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var userId =  /*[[${userId}]]*/;
+/*]]>*/
+$(function() {
+	
+	// 初始化左侧表格
+	$.table.init(leftOpt);
+	// 初始化右侧表格
+	$.table.init(rightOpt);
+	
+	$("#searchLeft").click("click", function() { // 绑定左边查询按扭
+		$('#tableLeft').bootstrapTable('refresh');
+	});
+	$("#resetLeft").click("click", function() {  // 绑定左边重置按扭
+		$("#searchFormLeft input").val("");
+		$("#searchFormLeft select").val("");
+		$('#tableLeft').bootstrapTable('refresh');
+	});
+	
+	$("#searchRight").click("click", function() { // 绑定右边查询按扭
+		$('#tableRight').bootstrapTable('refresh');
+	});
+	$("#resetRight").click("click", function() {  // 绑定右边重置按扭
+		$("#searchFormRight input").val("");
+		$("#searchFormRight select").val("");
+		$('#tableRight').bootstrapTable('refresh');
+	});
+
+});
+
+var prefix_role = ctx + "sys/role";
+
+var leftOpt = {
+	tableId: "tableLeft",
+    url: prefix_role + "/getRoleInUser",
+    sortName: "createTime",
+    sortOrder: "desc",
+    search: false,
+    showExport: false,
+    queryParams : function(params) {
+    	var searchParam = $("#searchFormLeft").serializeJSON();
+    	searchParam.pageNum = params.offset / params.limit + 1;
+		searchParam.pageSize = params.limit;
+		searchParam.orderByColumn = params.sort + " " + params.order;
+		searchParam.isAsc = params.order;
+    	searchParam.userId = userId;
+    	return searchParam;
+    },
+    columns : [{
+		field : 'roleName',
+		title : '角色名称',
+		formatter : function(value, row, index) {
+			return '<a href="#" onclick="look(\''+ row.roleId + '\')">' + value + '</a>';
+		}
+	},{
+		field : 'roleCode',
+		title : '角色编号'
+	},{
+		field : 'remark',
+		title : '角色说明'
+	},{
+		field : 'status',
+		title : '状态',
+		formatter: function(value, row, index) {
+	    	if(value === "1"){
+	    		return '<a class="btn btn-info btn-xs"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(value === "2"){
+	    		return '<a class="btn btn-danger btn-xs" ><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+	    }
+	},{
+       field: 'operate',
+       title: '操作',
+       align: 'center',
+       events: {'click .removeRelateUserRole': function (e, value, row, index) {
+	   			bindOrUnbind("您确定要给用户解绑该角色吗？", row.roleId, "unbind");
+       		}
+	   },
+       formatter:  function operateFormatter(value, row, index) {
+     		return ['<a href="#" class="removeRelateUserRole" title="解绑" >解绑  <i class="fa fa-arrow-right"></i> </a>'].join('');
+ 	   }
+   }]
+};
+var rightOpt = {
+	tableId: "tableRight",
+    url: prefix_role + "/getRoleNotInUser",
+    sortName: "createTime",
+    sortOrder: "desc",
+    search: false,
+    queryParams : function(params) {
+    	var searchParam = $("#searchFormRight").serializeJSON();
+    	searchParam.pageNum = params.offset / params.limit + 1;
+		searchParam.pageSize = params.limit;
+		searchParam.orderByColumn = params.sort + " " + params.order;
+		searchParam.isAsc = params.order;
+    	searchParam.userId = userId;
+    	return searchParam;
+    },
+    columns : [{
+    	field: 'operate',
+        title: '操作',
+        align: 'center',
+        events: {'click .addRelateUserRole': function (e, value, row, index) {
+        		bindOrUnbind("您确定要给用户绑定该角色吗？", row.roleId, "bind");
+        	}
+    	},
+    	formatter:  function operateFormatter(value, row, index) {
+		   	if(row.status == '1') {
+					return ['<a href="javascript:void(0)" class="addRelateUserRole" title="绑定" ><i class="fa fa-arrow-left">  绑定</i> </a>'].join('');
+		   	}
+	   		return ['<span><i class="fa fa-ban"> 无法绑定</i></span>'].join('');;
+    	}
+    },{
+		field : 'roleName',
+		title : '角色名称',
+		formatter : function(value, row, index) {
+			return '<a href="#" onclick="look(\''+ row.roleId + '\')">' + value + '</a>';
+		}
+	},{
+		field : 'roleCode',
+		title : '角色编号'
+	},{
+		field : 'remark',
+		title : '角色说明'
+	},{
+		field : 'status',
+		title : '状态',
+		formatter : function(value, row, index) {
+			if(value === "1"){
+	    		return '<a class="btn btn-info btn-xs"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(value === "2"){
+	    		return '<a class="btn btn-danger btn-xs" ><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+		}
+	}]
+};
+
+function look(id) {
+	$.modal.openView("查看 [角色]", ctx + "sys/role/edit/" + id);
+}
+
+function bindOrUnbind(msg, roleId, type) {
+	$.modal.confirm(msg, function(){
+		$.ajax({url: prefix_role + "/bindOrUnbind?roleId="+roleId+"&userId="+userId+"&type="+type,
+		    dataType:"json",
+   	    	success:function(data){
+       	    	$('#tableLeft').bootstrapTable('refresh');
+       	    	$('#tableRight').bootstrapTable('refresh');
+   	    	},
+   	    	error:function(xhr, textStatus){
+   	    		if(401 == xhr.status){
+   	    			top.location.href="/";
+   	    		}
+   	    	}
+		});
+	});
+}
+</script>
+</head>
+<body class="bg-white">
+	<div class="wrapper wrapper-content">
+		<div class="row">
+			<div class="col-sm-6 col-md-6 ">
+				<!-- 搜索框-->
+				<div class="col-sm-12 col-md-12">
+					<h4 style="color: #0b10d4">已绑定的角色</h4>
+				</div>
+				<div class="accordion-group">
+					<div id="collapseTwo1" class="accordion-body">
+						<div class="accordion-inner">
+							<form id="searchFormLeft" class="form form-horizontal well clearfix">
+								<div class="col-sm-4">
+									<label class="label-item single-overflow pull-left" title="角色名称：">角色名称：</label> 
+									<input type="text" name="roleName" maxlength="100" class=" form-control" placeholder="输入名称，可模糊匹配"/>
+								</div>
+								<div class="col-sm-4">
+									<label class="label-item single-overflow pull-left" title="角色编号：">角色编号：</label> 
+									<input type="text" name="roleCode" maxlength="100" class=" form-control" placeholder="输入编号，可精确匹配"/>
+								</div>
+								<div class="col-sm-4">
+									<div style="margin-top: 26px">
+										<a id="searchLeft" class="btn btn-primary btn-rounded btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a> 
+										<a id="resetLeft" class="btn btn-primary btn-rounded btn-bordered btn-sm"><i class="fa fa-refresh"></i> 重置</a>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- 搜索框结束 -->
+				<!-- 表格 -->
+				<table id="tableLeft" data-toolbar="#toolbarLeft" data-minimum-count-columns="1" data-id-field="id"></table>
+			</div>
+			<div class="col-sm-6 col-md-6 animated fadeInRight">
+				<!-- 搜索框-->
+				<div class="col-sm-12 col-md-12">
+					<h4 style="color: #e05656">未绑定的角色</h4>
+				</div>
+				<div class="accordion-group">
+					<div id="collapseTwo" class="accordion-body">
+						<div class="accordion-inner">
+							<form id="searchFormRight" class="form form-horizontal well clearfix">
+								<div class="col-sm-4">
+									<label class="label-item single-overflow pull-left" title="角色名称：">角色名称：</label> 
+									<input type="text" name="roleName" maxlength="100" class=" form-control" placeholder="输入名称，可模糊匹配"/>
+								</div>
+								<div class="col-sm-4">
+									<label class="label-item single-overflow pull-left" title="角色编号：">角色编号：</label> 
+									<input type="text" name="roleCode" maxlength="100" class=" form-control" placeholder="输入编号，可精确匹配"/>
+								</div>
+								<div class="col-sm-4">
+									<div style="margin-top: 26px">
+										<a id="searchRight" class="btn btn-primary btn-rounded btn-bordered btn-sm"><i class="fa fa-search"></i> 查询</a> 
+										<a id="resetRight" class="btn btn-primary btn-rounded btn-bordered btn-sm"><i class="fa fa-refresh"></i> 重置</a>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				<!-- 搜索框结束 -->
+				<!-- 表格 -->
+				<table id="tableRight" data-toolbar="#toolbarRight" data-minimum-count-columns="1" data-id-field="id"></table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

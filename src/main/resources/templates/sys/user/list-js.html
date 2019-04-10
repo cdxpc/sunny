@@ -1,0 +1,184 @@
+<script th:inline="javascript">
+$(function() {
+	
+	$.table.init(userOptions);
+    
+    // 删除时，按钮可以点击
+    $('#user-table').on('check.bs.table uncheck.bs.table load-success.bs.table ' +
+            				 'check-all.bs.table uncheck-all.bs.table', function () {
+        $('#remove').prop('disabled', ! $('#user-table').bootstrapTable('getSelections').length);
+    });
+    
+    // 新增按钮
+    $("#add").on('click', add);
+    
+    // 删除按钮
+    //$("#remove").on('click', batRemove);
+    
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+});
+
+var cu = JSON.parse(sessionStorage.getItem("currentUser"));
+
+var userTypes = /*[[${@dict.getValuesByType('dict_user_type')}]]*/;
+var genders = /*[[${@dict.getValuesByType('dict_user_gender')}]]*/;
+
+var canCreate_user = true;	// 可创建数据
+var canLook_user = true;	// 可查看详情
+var canEdit_user = true;	// 可编辑数据
+var canRemove_user = true;	// 可删除数据
+var canShow_user = true;	// 可展示字典类型对应的值列表数据
+var prefix_user = ctx + "sys/user";
+
+var userOptions = {
+	tableId: "user-table",
+    url: prefix_user + "/data",
+    createUrl: prefix_user + "/add",
+    updateUrl: prefix_user + "/edit/{id}",
+    saveUrl: prefix_user + "/save",
+    removeUrl: prefix_user + "/remove",
+    modifyStatusUrl: prefix_user + "/modifyStatus",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "用户",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	if(row.status === "1") {
+    		dblClick(row.userId);
+    	}
+    }, 
+    columns: [{
+        field: 'loginName',
+        title: '登陆账户'
+    },
+    {
+        field: 'realName',
+        title: '用户姓名',
+        formatter: function(value, row, index) {
+        	if(canLook_user) {
+        		return '<a href="#" title="查看详情" onclick="look(\'' + row.userId + '\')">' + value + '</a>';
+        	}
+        	return value;
+        }
+    },
+    {
+        field: 'userType',
+        title: '用户类型',
+        formatter: function(value, row, index) {
+            return $.dictHelper.show(userTypes, row.userType);
+        }
+    },
+    {
+        field: 'gender',
+        title: '性别',
+        formatter: function(value, row, index) {
+            return $.dictHelper.show(genders, row.gender);
+        }
+    },
+    {
+        field: 'mobile',
+        title: '手机号'
+    },
+    {
+        field: 'email',
+        title: '邮箱'
+    },
+    {
+        field: 'status',
+        title: '状态',
+        align: "center",
+        width: '80px',
+	    formatter: function(value, row, index) {
+	    	var status = row.status;
+	    	if(status === "1"){
+	    		return '<a href="#" onclick="unuse(\'' + row.userId + '\')" class="btn btn-info btn-xs" title="可禁用"><i class="fa fa-check-circle"></i>已启用</a>';
+	    	}else if(status === "2"){
+	    		return '<a href="#" onclick="inuse(\'' + row.userId + '\')" class="btn btn-danger btn-xs" title="可启用"><i class="fa fa-minus-circle"></i>已禁用</a>';
+	    	}
+	    }
+    },
+    {
+        title: '操作',
+        width: '100px',
+        formatter: function(value, row, index) {
+        	var userId = row.userId;
+            var actions = [];
+            if(row.status === "1"){
+                actions.push('<a class="btn btn-primary btn-xs" href="#" title="绑定角色" onclick="bindRole(\'' + userId + '\')"><i class="fa fa-cog"></i></a> ');
+	            if(cu.userType === "1") { // 如果当前登录用户是超级管理员，才有重置密码的操作，前端控制按钮，后台控制操作执行权
+	            	actions.push('<a class="btn btn-success btn-xs" href="#" title="密码重置" onclick="restPwd(\'' + userId + '\')"><i class="fa fa-key"></i></a> ');
+	            }
+                if(canRemove_user && row.userType !== "1"){
+	                actions.push('<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="remove(\'' + userId + '\')"><i class="fa fa-remove"></i></a> ');
+	            }
+            	return actions.join('');
+            } 
+            return '<p class="btn btn-danger btn-xs" title="无法操作"><i class="fa fa-ban"></i></p>';
+        }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function look(id) {
+	$.operate.details($.table, id);
+}
+
+// 双击行编辑数据
+function dblClick(id) {
+	if(canEdit_user) { // 有编辑权限才能修改
+		$.operate.edit($.table, id);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+// 新增
+function add() {
+	$.operate.add($.table);
+}
+
+// 批量删除
+function batRemove() {
+	$.operate.batRemove($.table);
+}
+
+// 删除
+function remove(id) {
+	$.operate.remove($.table, id);
+}
+
+//禁用
+function unuse(id) {
+	$.operate.unuse($.table, {'userId' : id});
+}
+
+// 启用
+function inuse(id) {
+	$.operate.inuse($.table, {'userId' : id});
+}
+
+function restPwd(id) {
+	$.operate.post(null, prefix_user + "/restPwd", {'userId' : id})
+}
+
+// 角色绑定
+function bindRole(id) {
+	$.operate.cust(false, "[用户绑定角色]", prefix_user + "/bindRole/" + id, null, "1300px", "600px");
+}
+</script>
