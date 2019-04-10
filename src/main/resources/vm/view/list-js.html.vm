@@ -1,0 +1,175 @@
+<script th:inline="javascript">
+    $(function() {
+
+        $.treeTable.init(menuOptions);
+
+        // 新增按钮
+        $("#add").on('click', add);
+
+        // 查询按钮
+        $("#search").on('click', search);
+
+        // 重置按钮
+        $("#reset").on('click', reset);
+
+    });
+
+    var menuTypes = /*[[${@dict.getValuesByType('dict_menu_type')}]]*/;
+    var treeNodes = /*[[${@dict.getValuesByType('dict_tree_node')}]]*/;
+    var visibles = /*[[${@dict.getValuesByType('dict_menu_visible')}]]*/;
+    var canLook = true;
+    var prefix_menu = ctx + "sys/menu";
+
+
+    var menuOptions = {
+        id: "menuId",
+        parentId: "parentId",
+        url: prefix_menu + "/data",
+        createUrl: prefix_menu + "/add/",
+        updateUrl: prefix_menu + "/edit/{id}",
+        saveUrl: prefix_menu + "/save",
+        removeUrl: prefix_menu + "/remove",
+        createSubUrl: prefix_menu + "/addSub/{id}",
+        modifyStatusUrl: prefix_menu + "/modifyStatus",
+        modalName: "菜单",
+        columns: [{
+            field: 'menuName',
+            title: '菜单名称',
+            width: '300px',
+            formatter: function(row, index) {
+                var icon = '<i class="' + row.icon + '">  ';
+                if(canLook) {
+                    return '<a href="#" title="查看详情" onclick="look(\'' + row.menuId + '\')">' + icon + row.menuName + '</i></a>';
+                }
+                return icon + row.menuName + '</i>';
+            }
+        },
+            {
+                field: 'url',
+                title: '访问链接',
+            },
+            {
+                field: 'perms',
+                title: '权限标识',
+            },
+            {
+                field: 'icon',
+                title: '菜单图标',
+            },
+            {
+                field: 'menuType',
+                title: '菜单类型',
+                align: "center",
+                width: '90px',
+                formatter: function(row, index) {
+                    return $.dictHelper.show(menuTypes, row.menuType);
+                }
+            },
+            {
+                field: 'treeNode',
+                title: '树节点',
+                align: "center",
+                width: '70px',
+                formatter: function(row, index) {
+                    return $.dictHelper.show(treeNodes, row.treeNode);
+                }
+            },
+            /* {
+                field: 'sort',	// TODO 排序功能暂时还未实现
+                title: '排序',
+                align: "center",
+                width: '60px',
+                formatter: function(row, index) {
+                   return '<a class="fa fa-long-arrow-down" title="下移"></a>   <a class="fa fa-long-arrow-up" title="上移"></a>';
+                }
+            }, */
+            {
+                field: 'visible',
+                title: '可见性',
+                align: "center",
+                width: '70px',
+                formatter: function(row, index) {
+                    return $.dictHelper.show(visibles, row.visible);
+                }
+            },
+            {
+                field: 'status',
+                title: '状态',
+                align: "center",
+                width: '80px',
+                formatter: function(row, index) {
+                    var status = row.status;
+                    if(status === "1"){
+                        return '<a href="#" onclick="unuse(\'' + row.menuId + '\')" class="btn btn-info btn-xs" title="可禁用"><i class="fa fa-check-circle"></i>已启用</a>';
+                    }else if(status === "2"){
+                        return '<a href="#" onclick="inuse(\'' + row.menuId + '\')" class="btn btn-danger btn-xs" title="可启用"><i class="fa fa-minus-circle"></i>已禁用</a>';
+                    }
+                }
+            },
+            {
+                title: '操作',
+                width: '90px',
+                formatter: function(row, index) {
+                    if (row.parentId !== 0) {
+                        var actions = [];
+                        if(row.status === '1') {
+                            actions.push('<a class="btn btn-primary btn-xs" title="添加子菜单" href="#" onclick="addSub(\'' + row.menuId + '\')"><i class="fa fa-plus"></i></a> ');
+                            actions.push('<a class="btn btn-success btn-xs" title="编辑菜单" href="#" onclick="edit(\'' + row.menuId + '\')"><i class="fa fa-edit"></i></a> ');
+                            if (row.treeNode === '2') {
+                                actions.push('<a class="btn btn-danger btn-xs" title="删除菜单" href="#" onclick="remove(\'' + row.menuId + '\')"><i class="fa fa-remove"></i></a>');
+                            }
+                            return actions.join('');
+                        }
+                        return '<p class="btn btn-danger btn-xs" title="无法操作"><i class="fa fa-ban"></i></p>';
+                    } else {
+                        return "";
+                    }
+                }
+            }]
+    };
+
+    //搜索
+    function search() {
+        $.treeTable.search("searchForm");
+    }
+
+    // 重置
+    function reset() {
+        $.treeTable.reset("searchForm");
+    }
+
+    // 查看详情
+    function look(id) {
+        $.operate.details($.treeTable, id);
+    }
+
+    // 新建
+    function add() {
+        $.operate.add($.treeTable);
+    }
+
+    // 添加孩子
+    function addSub(id) {
+        $.operate.addSub($.treeTable, id);
+    }
+
+    // 编辑
+    function edit(id) {
+        $.operate.edit($.treeTable, id);
+    }
+
+    // 删除
+    function remove(id) {
+        $.operate.remove($.treeTable, id);
+    }
+
+    // 禁用
+    function unuse(id) {
+        $.operate.unuse($.treeTable, {'menuId' : id});
+    }
+
+    // 启用
+    function inuse(id) {
+        $.operate.inuse($.treeTable, {'menuId' : id});
+    }
+</script>

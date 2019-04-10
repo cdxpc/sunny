@@ -1,0 +1,11 @@
+package com.sunny.module.sys.menu.service;
+
+import com.sunny.core.base.BaseService;
+import com.sunny.core.base.TreeService;
+import com.sunny.module.sys.menu.entity.Menu;
+
+import java.util.List;
+
+public interface MenuService extends BaseService<Menu>, TreeService<Menu> {
+
+ }

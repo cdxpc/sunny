@@ -1,0 +1,18 @@
+package com.sunny.module.sys.menu.service.impl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.sunny.module.sys.menu.entity.Menu;
+import com.sunny.module.sys.menu.mapper.MenuMapper;
+import com.sunny.module.sys.menu.service.MenuService;
+
+@Service("menuService")
+public class MenuServiceImpl extends TreeServiceImpl<Menu, MenuMapper> implements MenuService {
+
+}

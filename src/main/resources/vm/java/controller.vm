@@ -1,0 +1,161 @@
+package com.sunny.module.sys.menu.controller;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.sunny.core.ControllerHelper;
+import com.sunny.core.ResponseJson;
+import com.sunny.core.SpringContextHolder;
+import com.sunny.core.constant.RestApiConstants;
+import com.sunny.core.util.StringUtils;
+import com.sunny.core.util.UuidUtils;
+import com.sunny.module.DictHelper;
+import com.sunny.module.common.AbstractInternalController;
+import com.sunny.module.sys.menu.dto.MenuDto;
+import com.sunny.module.sys.menu.entity.Menu;
+import com.sunny.module.sys.menu.service.MenuService;
+
+@Controller
+@RequestMapping(RestApiConstants.REST_API_MENU)
+public class MenuController extends AbstractInternalController<Menu, MenuDto>{
+
+    private MenuService menuService = SpringContextHolder.getBean(MenuService.class);
+    private DictHelper dictHelper = SpringContextHolder.getBean(DictHelper.class);
+
+    @Override
+    protected ControllerHelper<Menu, MenuDto> helper() {
+        return ControllerHelper.all(menuService, Menu.of(), new MenuDto(), RestApiConstants.REST_API_MENU_LIST);
+    }
+
+    public String list() {
+        return toView();
+    }
+
+    @PostMapping(RestApiConstants.DATA)
+    @ResponseBody
+        public ResponseJson data(MenuDto dto, Model model) {
+        return findListNoPage(dto);
+    }
+
+    //	@RequiresPermissions("sys:menu:add")
+    @GetMapping(RestApiConstants.ADD)
+    public String add(Model model) {	// 新增操作
+        setModel(null, model, false);
+        return RestApiConstants.REST_API_MENU_FORM;
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:details", "sys:menu:edit"}, logical = Logical.OR)
+    @GetMapping(RestApiConstants.ADD_SUB + "/{menuId}")
+    public String addSub(@PathVariable String menuId, Model model) { // 新增子级操作
+        setModel(menuId, model, false);
+        return RestApiConstants.REST_API_MENU_FORM;
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:details", "sys:menu:edit"}, logical = Logical.OR)
+    @GetMapping(RestApiConstants.EDIT + "/{menuId}")
+    public String edit(@PathVariable String menuId, Model model) { // 编辑操作
+        setModel(menuId, model, true);
+        return RestApiConstants.REST_API_MENU_FORM;
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:save"})
+    @PostMapping(RestApiConstants.SAVE)
+    @ResponseBody
+    public ResponseJson save(MenuDto dto) {
+        if(StringUtils.isEmpty(dto.getMenuId())) {  // 保存操作
+            dto.setMenuId(UuidUtils.uuid());
+            return create(dto);
+        }
+        return update(dto.getMenuId(), dto);
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:remove"})
+    @PostMapping(RestApiConstants.REMOVE)
+    @ResponseBody
+        public ResponseJson remove(String id) {  // 删除操作
+        return deleteById(id);
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:remove"})
+    @PostMapping(RestApiConstants.REMOVE_BATCH)
+    @ResponseBody
+        public ResponseJson removeBatch(String ids) {  // 删除操作
+        return deleteByIds(ids);
+    }
+
+    //	@RequiresPermissions(value = {"sys:menu:edit"})
+    @PostMapping(RestApiConstants.MODIFY_STATUS)
+    @ResponseBody
+        public ResponseJson modifyStatus(MenuDto dto) { // 启用、禁用操作
+        return update(dto.getMenuId(), dto);
+    }
+
+    private void setModel(String menuId, Model model, boolean isEdit) {
+        MenuDto menu = null;
+        if(StringUtils.isNotEmpty(menuId)) {
+            if(isEdit) {
+                ResponseJson json = findById(menuId);
+                menu = (MenuDto) json.getRows();
+                if(menu != null) {
+                    if(menu.getParentId() != null) {
+                        Menu parent = menuService.findById(menu.getParentId());
+                        if(parent != null) {
+                            menu.setParentId(parent.getMenuId());
+                            menu.setParentName(parent.getMenuName());
+                        }
+                    } else {
+                        menu.setParentName("无");
+                    }
+                }
+            } else {
+                menu = helper().getDto();
+                Menu parent = menuService.findById(menuId);
+                if(parent != null) {
+                    menu.setParentId(parent.getMenuId());
+                    menu.setParentName(parent.getMenuName());
+                }
+                menu.setTreeNode("2");
+                menu.setVisible("1");
+            }
+        } else {
+            if(!isEdit) {
+                menu = helper().getDto();
+                Menu root = menuService.getRoot("1");
+                if(root != null) {
+                    menu.setTreeNode("2");
+                    menu.setVisible("1");
+                    menu.setMenuType("R");
+                    menu.setParentId(root.getMenuId());
+                    menu.setParentName(root.getMenuName());
+                }
+            }
+        }
+
+        model.addAttribute("menu", menu);
+        model.addAttribute("menuTypes", dictHelper.getValuesByType("dict_menu_type"));
+        model.addAttribute("visibles", dictHelper.getValuesByType("dict_menu_visible"));
+        model.addAttribute("treeNodes", dictHelper.getValuesByType("dict_tree_node"));
+    }
+
+    @GetMapping(RestApiConstants.TREE_VIEW + "/{menuId}")
+    public String treeView(@PathVariable String menuId, Model model) { // 展示树
+        model.addAttribute("menu", menuService.findById(menuId));
+        return RestApiConstants.REST_API_MENU_TREE;
+    }
+
+    @GetMapping(RestApiConstants.TREE_DATA)
+    @ResponseBody
+    public List<Map<String, Object>> treeData() { // 展示树
+        //model.addAttribute("menu", menuService.findById(menuId));
+        return menuService.getTreeData();
+    }
+
+}
