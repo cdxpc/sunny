@@ -1,0 +1,48 @@
+注释完善：
+/**
+ * <br>
+ * 
+ * @author cdxpc <cdxpc2018@163.com>, <br>
+ *         kevin.chen <crsfyc-9@163.com>
+ * @date 2019年2月11日
+ * @since 1.0.0v
+ */
+
+模板制作：
+	后台java模板
+	页面html模板
+	js模板
+	
+配置优化：
+	系统默认配置：
+	可覆盖配置：
+	可扩展配置：
+	自定义配置：
+	
+功能开发：
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+swagger api集成：
+
+druid sql监控集成：
