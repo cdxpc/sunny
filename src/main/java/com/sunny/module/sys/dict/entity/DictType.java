@@ -19,5 +19,6 @@ public class DictType extends DbEntity {
 	private String dictTypeId;
 	private String dictTypeKey;
 	private String dictTypeName;
+	private String hasValues;
 
 }

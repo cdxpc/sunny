@@ -15,6 +15,7 @@ public class DictDto extends DtoEntity {
 	private String dictTypeId;	// 字典类型id
 	private String dictTypeKey;	// 字典类型key
 	private String dictTypeName;// 字典类型名称
+	private String hasValues;	// 是否有字典值
 	
 	// value
 	private String dictValueId;	// 字典值id

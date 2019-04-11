@@ -1,11 +1,13 @@
 package com.sunny.module.sys.dict.service;
 
-import com.sunny.core.base.BaseService;
+import com.sunny.core.base.service.BaseService;
 import com.sunny.module.sys.dict.dto.DictDto;
 import com.sunny.module.sys.dict.entity.DictType;
 
-public interface DictTypeService extends BaseService<DictType, DictDto> {
+public interface DictTypeService extends BaseService<DictType> {
 	
-	public boolean deleteBatch(String ids);
+	boolean deleteBatch(String ids);
+
+	long findCountExSelf(DictDto dto);
 
 }
