@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <title>Sunny管理平台-数据清理任务管理</title>
+    <link th:replace="@{include/table-list-header}" rel="stylesheet" />
+</head>
+<body class="bg-white">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form id="task-form" th:object="${task}" autocomplete="off" class="form-horizontal m" >
+			<input type="hidden" name="taskId" th:field="*{taskId}"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">任务名称：<font color="red">*</font></label>
+				<div class="col-sm-8">
+					<input name="taskName" th:field="*{taskName}" maxlength="50" class="form-control required" placeholder="请输入任务名称，不可重复，不可为空"/>
+				</div>
+			</div>
+		</form>
+	</div>
+</body>
+<script type="text/javascript">
+var $table = null;
+function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
+	$table = table;
+	if(validateForm.form()){
+		$("#task-form").submit();
+	}
+} 
+
+var options = {
+		rules:{},
+    	messages: {}	
+}
+
+$(function() {
+	validateForm = $.form.validate("task-form", options);
+});
+
+</script>
+</html>

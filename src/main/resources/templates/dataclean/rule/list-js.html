@@ -1,0 +1,137 @@
+<script th:inline="javascript">
+$(function() {
+	
+	$.table.init(ruleOptions);
+	
+	// 新增按钮
+    $("#add").on('click', add);
+	
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+	
+});
+
+var ruleTypes = /*[[${@dict.getValuesByType('dict_clean_rule_type')}]]*/;
+var ruleStrategyTypes = /*[[${@dict.getValuesByType('dict_clean_rule_strategy_type')}]]*/;
+var isDefaults = /*[[${@dict.getValuesByType('dict_is_default')}]]*/;
+
+var canLook_rule = true;
+var canEdit_rule = true;
+var prefix_rule = ctx + "dataclean/rule";
+
+var ruleOptions = {
+	tableId: "rule-table",
+    url: prefix_rule + "/data",
+    createUrl: prefix_rule + "/add/",
+    updateUrl: prefix_rule + "/edit/{id}",
+    saveUrl: prefix_rule + "/save",
+    removeUrl: prefix_rule + "/remove",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "清理规则",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	if(row.status === "1" && !row.bindCount) {
+    		dblClick(row.ruleId);
+    	}
+    }, 
+    columns: [{
+		checkbox: true
+	}, {
+	    field: 'ruleName',
+	    title: '规则名称',
+	    formatter:function(value, row, index){
+	    	value = value != null && value.length > 20 ? value.substring(0, 15) + " ..." : value;
+	    	return '<a  href="#" onclick="look(\'' + row.ruleId + '\')">'+ value + '</a>';
+	    }
+	}, {
+	    field: 'ruleType',
+	    title: '规则类型',
+	    formatter:function(value, row, index) {
+	    	return $.dictHelper.show(ruleTypes, value);
+        }
+	}, {
+	    field: 'ruleStrategyType',
+	    title: '策略类型',
+	    formatter:function(value, row, index) {
+            return $.dictHelper.show(ruleStrategyTypes, value);
+        }
+	}, {
+	    field: 'cron',
+	    title: '表达式'
+	}, {
+	    field: 'days',
+	    title: '天数'
+	}, {
+	    field: 'isDefault',
+	    title: '是否默认规则',
+	    width: '70px',
+	    formatter:function(value, row, index) {
+            return $.dictHelper.show(isDefaults, value);
+        }
+	}, {
+	    field: 'remarks',
+	    title: '描述说明',
+	    formatter:function(value, row , index){
+	    	return value != null && value.length > 200 ? value.substring(0, 150) + " ..." : value;
+	    }
+	}, {
+        field: 'operate',
+        title: '操作',
+        width: '50px',
+        align: "center",
+        events: {
+	       'click .remove': function (e, value, row, index) {
+	    	    remove(row.ruleId);
+	        }
+	    },
+        formatter: function operateFormatter(value, row, index) {
+        	var del = '';
+        	if(row.bindCount) {
+        		// do nothing
+        	} else {
+       			del = ' <a href="#" class="remove" title="删除"><i class="fa fa-remove"></i></a>';
+        	}
+	    	return [del].join('');
+	    }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function look(id) {
+	$.operate.details($.table, id);
+}
+
+//双击行编辑数据
+function dblClick(id) {
+	if(canEdit_rule) { // 有编辑权限才能修改
+		$.operate.edit($.table, id);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+//新增
+function add() {
+	$.operate.add($.table);
+}
+
+// 删除
+function remove(id) {
+	$.operate.remove($.table, id);
+}
+</script>

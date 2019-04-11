@@ -1,0 +1,197 @@
+<script th:inline="javascript">
+$(function() {
+	
+	$.table.init(taskOptions);
+	
+	// 新增按钮
+    $("#add").on('click', add);
+	
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+	
+});
+
+var canLook_task = true;
+var canEdit_task = true;
+var prefix_task = ctx + "dataclean/task";
+
+var taskOptions = {
+	tableId: "task-table",
+    url: prefix_task + "/data",
+    createUrl: prefix_task + "/add/",
+    updateUrl: prefix_task + "/edit/{id}",
+    saveUrl: prefix_task + "/save",
+    removeUrl: prefix_task + "/remove",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "清理任务",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	if(row.status === "1") {
+    		dblClick(row.taskId);
+    	}
+    }, 
+    columns: [{
+		checkbox: true
+	}, {
+	    field: 'taskName',
+	    title: '任务名称',
+	    formatter:function(value, row, index){
+	    	value = value != null && value.length > 20 ? value.substring(0, 15) + " ..." : value;
+	    	return '<a  href="#" onclick="look(\'' + row.taskId + '\')">'+ value + '</a>';
+	    }
+	}, {
+	    field: 'taskGroup',
+	    title: '任务组',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'params',
+	    title: '参数',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'taskMethod',
+	    title: '方法',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'dbName',
+	    title: '操作数据库',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'tableName',
+	    title: '操作数据表',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'ruleName',
+	    title: '任务关联规则',
+	    formatter:function(value, row, index){
+	    	return value;
+	    }
+	}, {
+	    field: 'runStatus',
+	    title: '运行状态',
+        align: "center",
+        width: '80px',
+	    formatter: function(value, row, index) {
+	    	var runStatus = row.runStatus;
+	    	var taskStatus = row.status;
+	    	if(taskStatus === "1") {
+	    		return '<a class="btn btn-xs"> 未运行</a>';
+	    	} else {
+		    	if(runStatus === "1"){
+		    		return '<a class="btn btn-success btn-xs"> 运行正常</a>';
+		    	}else if(runStatus === "2"){
+		    		return '<a class="btn btn-danger btn-xs"> 运行异常</a>';
+		    	}
+	    	}
+	    }
+	}, {
+	    field: 'status',
+	    title: '任务状态',
+        align: "center",
+        width: '80px',
+        events: {
+		       'click #start': function (e, value, row, index) {
+		    	   start(row);
+		        },
+		       'click #stop': function (e, value, row, index) {
+		    	   stop(row);
+		        },
+		       'click #restart': function (e, value, row, index) {
+		    	   restart(row);
+		        }
+		    },
+	    formatter: function(value, row, index) {
+	    	var runStatus = row.runStatus;
+	    	var taskStatus = row.status;
+	    	if(taskStatus === "1"){ // 如果任务还未发布，则可以点启动按钮就行发布并启动任务
+	    		return '<a href="#" id="start" title="启动任务" class="btn btn-success btn-xs"><i class="fa fa-play"></i> 启动</a>';
+	    	}else if(taskStatus === "2" && runStatus === "1"){// 如果任务已经启动且运行正常，则可以暂停任务，修改任务，移除任务
+	    		return '<a href="#" id="stop" title="停止任务" class="btn btn-danger btn-xs"><i class="fa fa-stop"></i> 停止</a>';
+	    	}else if(taskStatus === "2" && runStatus === "2"){// 如果任务已经启动但运行异常，则可以重启任务，修改任务，移除任务
+	    		return '<a href="#" id="restart" title="重启任务" class="btn btn-info btn-xs"><i class="fa fa-pause"></i> 重启</a>';
+	    	}
+	    }
+	}, {
+        field: 'operate',
+        title: '操作',
+        align: "center",
+        width: '50px',
+        events: {
+		       'click .edit': function (e, value, row, index) {
+		        	edit(row.taskId);
+		        },
+		       'click .del': function (e, value, row, index) {
+		    	  	del(row.taskId);
+		        }
+		    },
+        formatter: function operateFormatter(value, row, index) {
+       		var del = ' <a href="#" class="del" title="删除"><i class="fa fa-remove"></i></a>';
+	    	return [del].join('');
+	    }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function look(id) {
+	$.operate.details($.table, id);
+}
+
+//双击行编辑数据
+function dblClick(id) {
+	if(canEdit_database) { // 有编辑权限才能修改
+		$.operate.edit($.table, id);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+//新增
+function add() {
+	$.operate.add($.table);
+}
+
+// 删除
+function remove(id) {
+	$.operate.remove($.table, id);
+}
+
+function start(row) {
+	console.log("start=>" + row);
+}
+
+function stop(row) {
+	console.log("start=>" + row);
+}
+
+function addPlan(row) {
+	console.log("addPlan=>" + row);
+}
+
+function removePlan(row) {
+	console.log("removePlan=>" + row);
+}
+</script>
