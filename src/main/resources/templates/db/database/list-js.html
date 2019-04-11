@@ -1,0 +1,128 @@
+<script th:inline="javascript">
+$(function() {
+	   
+	$.table.init(dataBaseOptions);
+	
+	// 新增按钮
+    $("#add").on('click', add);
+	
+ 	// 查询按钮
+    $("#search").on('click', search);
+    
+    // 重置按钮
+    $("#reset").on('click', reset);
+    
+});
+
+var dbTypes = /*[[${@dict.getValuesByType('dict_db_type')}]]*/;
+var isDefaults = /*[[${@dict.getValuesByType('dict_is_default')}]]*/;
+
+var canLook_database = true;
+var canEdit_database = true;
+var prefix_database = ctx + "db/dataBase";
+
+var dataBaseOptions = {
+	tableId: "database-table",
+    url: prefix_database + "/data",
+    createUrl: prefix_database + "/add/",
+    updateUrl: prefix_database + "/edit/{id}",
+    saveUrl: prefix_database + "/save",
+    removeUrl: prefix_database + "/remove",
+    sortName: "createTime",
+    sortOrder: "desc",
+    modalName: "数据库",
+    search: false,
+    showExport: false,
+    dblClickRow: function(row, $el) { // 双击行,修改编辑
+    	if(row.status === "1") {
+    		dblClick(row.dbId);
+    	}
+    }, 
+    columns: [{
+	    field: 'dbName',
+	    title: '数据库名',
+	    formatter:function(value, row, index){
+	    	if(canLook_database) {
+        		return '<a href="#" title="查看详情" onclick="look(\'' + row.dbId + '\')">' + value + '</a>';
+        	}
+        	return value;
+	    }
+	}, 
+	{
+	    field: 'owner',
+	    title: '数据库拥有者',
+	}, 
+	{
+	    field: 'dbType',
+	    title: '数据源类型',
+	    formatter:function(value, row, index) {
+	    	return $.dictHelper.show(dbTypes, value);
+        }
+	}, 
+	{
+	    field: 'dbIp',
+	    title: '数据源ip'
+	}, 
+	{
+	    field: 'username',
+	    title: '登录账户',
+	}, 
+	{
+	    field: 'password',
+	    title: '登录密码',
+	    formatter: function(value, row, index) {
+	    	return '******';
+	    }
+	},
+	{
+	    field: 'isDefault',
+	    title: '是否默认库',
+	    formatter: function(value, row, index) {
+	    	return $.dictHelper.show(isDefaults, value);
+	    }
+	},
+    {
+        title: '操作',
+        width: '70px',
+        align: "center",
+        formatter: function(value, row, index) {
+        	var id = row.dbId;
+        	return '<a class="btn btn-danger btn-xs" href="#" title="删除操作" onclick="remove(\'' + id + '\')"><i class="fa fa-remove"></i></a>';
+        }
+    }]
+};
+
+// 搜索
+function search() {
+	$.table.search("searchForm");
+}
+
+// 重置
+function reset() {
+	$.table.reset("searchForm");
+}
+
+// 查看详情
+function look(id) {
+	$.operate.details($.table, id);
+}
+
+//双击行编辑数据
+function dblClick(id) {
+	if(canEdit_database) { // 有编辑权限才能修改
+		$.operate.edit($.table, id);
+	} else {
+		$.modal.msg("您没有编辑权限！");
+	}
+}
+
+//新增
+function add() {
+	$.operate.add($.table);
+}
+
+// 删除
+function remove(id) {
+	$.operate.remove($.table, id);
+}
+</script>
