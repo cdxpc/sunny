@@ -1,22 +1,20 @@
 package com.sunny.core.base.controller;
 
-import java.beans.PropertyEditorSupport;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import com.github.pagehelper.Page;
+import com.sunny.core.ResponseJson;
+import com.sunny.core.ServletHelper;
+import com.sunny.core.constant.PlatformConstants;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
-import com.github.pagehelper.Page;
-import com.sunny.core.ResponseJson;
-import com.sunny.core.ServletHelper;
-import com.sunny.core.constant.PlatformConstants;
-
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.beans.PropertyEditorSupport;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 访问控制层基类
@@ -32,10 +30,10 @@ import lombok.extern.slf4j.Slf4j;
 public class BaseController<E> {
 	
 	// XXX 是否运行插入或更新空值到数据库，这里需要改为配置来设置
-	protected static final boolean ALLOW_NULL = false;
+	static final boolean ALLOW_NULL = false;
 
 	@InitBinder
-	protected void initBinder(WebDataBinder binder) {
+	void initBinder(WebDataBinder binder) {
 
 		// 注册字符串类型
 		binder.registerCustomEditor(String.class, StringEditor.of());

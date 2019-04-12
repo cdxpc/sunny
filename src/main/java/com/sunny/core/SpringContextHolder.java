@@ -38,11 +38,11 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
 
 	public static <T> T getBean(Class<T> requiredType) {
 		assertContextInjected();
-		return (T) context.getBean(requiredType);
+		return context.getBean(requiredType);
 	}
 
 	@Override
-	public void destroy() throws Exception {
+	public void destroy() {
 		clearHolder();
 	}
 
@@ -63,7 +63,7 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
 	}
 	
 	private static void assertContextInjected() {
-		Validate.validState(context != null, "applicaitonContext属性未注入, 请在applicationContext.xml中定义SpringContextHolder.", new Object[0]);
+		Validate.validState(context != null, "applicationContext属性未注入, 请在applicationContext.xml中定义SpringContextHolder.");
 	}
 
 }

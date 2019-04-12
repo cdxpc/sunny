@@ -14,9 +14,9 @@ import java.util.Map;
 public class DbType {
 	
 	// 数据源访问url映射集
-	public static Map<String, String> urls = new HashMap<>();
+	private static Map<String, String> urls = new HashMap<>();
 	// 数据源驱动映射集
-	public static Map<String, String> drivers = new HashMap<>();
+	private static Map<String, String> drivers = new HashMap<>();
 	
 	static {
 		urls.put("1", "jdbc:mysql://%s:3306/%s");

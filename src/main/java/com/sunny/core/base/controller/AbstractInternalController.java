@@ -1,19 +1,18 @@
 package com.sunny.core.base.controller;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.util.CollectionUtils;
-
 import com.github.pagehelper.Page;
 import com.sunny.core.ResponseJson;
 import com.sunny.core.base.service.BaseService;
 import com.sunny.core.persistence.DbEntity;
 import com.sunny.core.persistence.DtoEntity;
 import com.sunny.core.util.BeanConvertUtils;
+import org.springframework.util.CollectionUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public abstract class AbstractInternalController<E extends DbEntity, D extends DtoEntity> extends AbstractController<E, D> {
@@ -86,7 +85,7 @@ public abstract class AbstractInternalController<E extends DbEntity, D extends D
 		if(!CollectionUtils.isEmpty(all)) {
 			responseJson = ResponseJson.ok();
 		}
-		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<D>(), getDtoClass(), all));
+		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<>(), getDtoClass(), all));
 		return responseJson;
 	}
 	
@@ -103,7 +102,7 @@ public abstract class AbstractInternalController<E extends DbEntity, D extends D
 		if(!CollectionUtils.isEmpty(list)) {
 			responseJson = ResponseJson.ok();
 		}
-		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<D>(), getDtoClass(), list));
+		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<>(), getDtoClass(), list));
 		return responseJson;
 	}
 	
@@ -128,7 +127,7 @@ public abstract class AbstractInternalController<E extends DbEntity, D extends D
 			responseJson.setPages(total / pageSize + ((total % pageSize == 0) ? 0 : 1));
 			responseJson.setTotal(total);
 		}
-		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<D>(), getDtoClass(), list));
+		responseJson.setRows(BeanConvertUtils.Entitys2Dtos(new ArrayList<>(), getDtoClass(), list));
 		return responseJson;
 	}
 	

@@ -1,9 +1,9 @@
 package com.sunny.core.datasource.dynamic;
 
+import com.sunny.core.datasource.model.DataSourceBean;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.sunny.core.datasource.model.DataSourceBean;
 
 /**
  * 与当前线程绑定的动态数据源映射
@@ -20,15 +20,14 @@ public class DataSourceContextHolder {
 	
 	/**
 	 * 获取动态数据源
-	 * @return
 	 */
-	public static Map<String, DataSourceBean> getDynamicDataSource() {
+	static Map<String, DataSourceBean> getDynamicDataSource() {
 		return threadLocal.get();
 	}
 
 	/**
 	 * 设置动态数据源
-	 * @param source
+	 * @param dataSourceBean
 	 */
 	public static void setDynamicDataSource(DataSourceBean dataSourceBean) {
 		if(dataSourceBean != null) {

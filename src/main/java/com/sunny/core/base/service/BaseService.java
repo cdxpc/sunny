@@ -1,13 +1,12 @@
 package com.sunny.core.base.service;
 
+import com.github.pagehelper.Page;
+import com.sunny.core.persistence.Changer;
+import lombok.NonNull;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import com.github.pagehelper.Page;
-import com.sunny.core.persistence.Changer;
-
-import lombok.NonNull;
 
 /**
  * 业务处理层基础接口
@@ -104,7 +103,7 @@ public interface BaseService<E> {
 	 *            查询条件对象
 	 * @param page
 	 *            分页及排序条件
-	 * @return
+	 * @return 分页数据和记录数
 	 */
 	Map<String, Object> findPage(E e, Page<E> page);
 	
@@ -115,7 +114,7 @@ public interface BaseService<E> {
 	 *            查询条件对象
 	 * @param changer
 	 *            数据交换对象
-	 * @return
+	 * @return 是否交换成功
 	 */
 	boolean changeSort(E e, Changer changer);
 

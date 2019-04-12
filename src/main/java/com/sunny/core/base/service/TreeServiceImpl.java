@@ -1,11 +1,10 @@
 package com.sunny.core.base.service;
 
-import java.util.List;
-import java.util.Map;
-
+import com.sunny.core.base.BaseMapper;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sunny.core.base.BaseMapper;
+import java.util.List;
+import java.util.Map;
 
 @Transactional(rollbackFor = Exception.class)
 public abstract class TreeServiceImpl<E, M extends BaseMapper<E>> extends CudServiceImpl<E, M> implements TreeService<E> {
@@ -23,9 +22,9 @@ public abstract class TreeServiceImpl<E, M extends BaseMapper<E>> extends CudSer
 		return this.mapper.selectByPrimaryKey(id);
 	}
 
-	@Override
-	public List<E> getRoots(E e) {
-		return this.mapper.select(e);
-	}
+	// @Override
+	// public List<E> getRoots(E e) {
+	// 	return this.mapper.select(e);
+	// }
 
 }

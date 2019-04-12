@@ -15,20 +15,16 @@ public interface TreeService<E> {
 	
 	/**
 	 * 获取某个顶级数据
-	 * @param id
-	 * @return
 	 */
 	E getRoot(String id);
 	
-	/**
-	 * 获取顶级数据集
-	 * @return
-	 */
-	List<E> getRoots(E e);
+	// /**
+	//  * 获取顶级数据集
+	//  */
+	// List<E> getRoots(E e);
 	
 	/**
 	 * 获取树数据
-	 * @return list
 	 */
 	List<Map<String, Object>> getTreeData();
 
