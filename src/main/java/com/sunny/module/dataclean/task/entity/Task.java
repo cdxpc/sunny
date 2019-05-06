@@ -29,12 +29,10 @@ public class Task extends DbEntity {
 	private String taskName;
 	// 任务组
 	private String taskGroup;
+	// 表达式
+	private String cron;
 	// 任务运行状态
 	private String runStatus; //1 - 正常   2 - 异常     任务状态 status 1-未发布   2-运行中  3-已停止
-	// 执行参数
-	private String params;
-	// 执行方法
-	private String taskMethod;
 	
     // 数据库ID
     private String dbId;
