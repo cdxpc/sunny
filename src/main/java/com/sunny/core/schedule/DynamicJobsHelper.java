@@ -1,7 +1,10 @@
 package com.sunny.core.schedule;
 
-import java.lang.reflect.Method;
-
+import com.sunny.core.SpringContextHolder;
+import com.sunny.core.schedule.factory.DisallowConcurrentQuartzJobFactory;
+import com.sunny.core.schedule.factory.QuartzJobFactory;
+import com.sunny.core.schedule.model.ScheduleJob;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
@@ -14,12 +17,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.TriggerKey;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
-import com.sunny.core.SpringContextHolder;
-import com.sunny.core.schedule.factory.DisallowConcurrentQuartzJobFactory;
-import com.sunny.core.schedule.factory.QuartzJobFactory;
-import com.sunny.core.schedule.model.ScheduleJob;
-
-import lombok.extern.slf4j.Slf4j;
+import java.lang.reflect.Method;
 
 @Slf4j
 public class DynamicJobsHelper {
@@ -45,13 +43,13 @@ public class DynamicJobsHelper {
 				Class clazz = CONCURRENT_IS.equals(job.getIsConcurrent()) ? QuartzJobFactory.class : DisallowConcurrentQuartzJobFactory.class;
 				JobDetail jobDetail = JobBuilder.newJob(clazz)
 						                        .withIdentity(jobName, jobGroup)
-						                        .usingJobData("data", job.getJobData())
 						                        .withDescription(job.getDescription())
 						                        .build();
 				jobDetail.getJobDataMap().put("scheduleJob", job);
 				CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
 				trigger = TriggerBuilder.newTrigger()
 				                        .withIdentity(jobName, jobGroup)
+										.usingJobData(job.getJobData())
 				                        .withDescription(job.getDescription())
 				                        .withSchedule(cronScheduleBuilder)
 				                        .build();
@@ -62,7 +60,7 @@ public class DynamicJobsHelper {
 				
 				trigger = trigger.getTriggerBuilder()
 						         .withIdentity(triggerKey)
-						         .usingJobData("data", job.getJobData())
+						         .usingJobData(job.getJobData())
 						         .withDescription(job.getDescription())
 			                     .withSchedule(cronScheduleBuilder)
 			                     .build();

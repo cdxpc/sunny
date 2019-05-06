@@ -115,3 +115,7 @@ sunny:
 
   job:
     package:
+
+  rule:
+    startup:
+      do: false

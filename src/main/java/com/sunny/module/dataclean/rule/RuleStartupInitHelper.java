@@ -5,6 +5,7 @@ import com.sunny.core.listener.AbstractApplicationListener;
 import com.sunny.module.dataclean.rule.mapper.RuleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Order(Ordered.LOWEST_PRECEDENCE - 10)
 @Slf4j
-public class RuleStratupInitHelper extends AbstractApplicationListener {
+public class RuleStartupInitHelper extends AbstractApplicationListener {
+
+    @Value("${sunny.rule.startup.do}")
+    private boolean startupDo;
 
     private RuleMapper ruleMapper;
     private Reflections ref;
@@ -33,5 +37,10 @@ public class RuleStratupInitHelper extends AbstractApplicationListener {
     @Override
     public void doAction() {
 
+    }
+
+    @Override
+    public boolean startupDo() {
+        return startupDo;
     }
 }
