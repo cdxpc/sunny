@@ -1,27 +1,24 @@
 package com.sunny.module.common;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
-import org.springframework.context.ApplicationListener;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.event.ContextRefreshedEvent;
-import org.springframework.stereotype.Component;
-
 import com.sunny.core.SpringContextHolder;
 import com.sunny.core.datasource.dynamic.DataSourceContextHolder;
 import com.sunny.core.datasource.model.DataSourceBean;
+import com.sunny.core.listener.AbstractApplicationListener;
 import com.sunny.core.util.UuidUtils;
 import com.sunny.module.common.mapper.CommonMapper;
 import com.sunny.module.db.database.entity.DataBase;
 import com.sunny.module.db.database.mapper.DataBaseMapper;
 import com.sunny.module.db.table.entity.DbTable;
 import com.sunny.module.db.table.mapper.DbTableMapper;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 将其他数据源的数据库表结构信息拉取过来，将其保存在默认的数据源表中，方便使用
@@ -33,24 +30,21 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @Lazy(false)
 @Slf4j
-public class PullTables implements ApplicationListener<ContextRefreshedEvent> {
+public class PullTables extends AbstractApplicationListener {
 
 	private CommonMapper commonMapper;
 	private DbTableMapper dbTableMapper;
 	private DataBaseMapper dataBaseMapper;
 
 	@Override
-	public void onApplicationEvent(ContextRefreshedEvent event) {
-		if (event.getApplicationContext().getParent() == null) {
-			log.info("application context : " + SpringContextHolder.getApplicationContext());
-			this.commonMapper = SpringContextHolder.getBean(CommonMapper.class);
-			this.dbTableMapper = SpringContextHolder.getBean(DbTableMapper.class);
-			this.dataBaseMapper = SpringContextHolder.getBean(DataBaseMapper.class);
-			doExecute();
-		}
+	public void initBeans() {
+		this.commonMapper = SpringContextHolder.getBean(CommonMapper.class);
+		this.dbTableMapper = SpringContextHolder.getBean(DbTableMapper.class);
+		this.dataBaseMapper = SpringContextHolder.getBean(DataBaseMapper.class);
 	}
 
-	private void doExecute() {
+	@Override
+	public void doAction() {
 		// 先将默认数据源中之前拉取过来的表结构信息记录全部删除掉，拉取最新的进行重新插入
 		dbTableMapper.delete(null);
 		// 从默认的数据源库中获取其他所有的数据源配置
@@ -59,22 +53,18 @@ public class PullTables implements ApplicationListener<ContextRefreshedEvent> {
 		final Map<String[], List<DbTable>> tablesMap = new HashMap<>();
 		final Map<String[], List<DbTable>> columnsMap = new HashMap<>();
 		final Map<String, Map<String[], List<DbTable>>> all = new HashMap<>();
-		
+
 		long time = System.currentTimeMillis();
-		CompletableFuture.runAsync(() -> {
-			list.stream().forEach(info -> {
-				getFromDynamicDataSource(tablesMap, columnsMap, all, info);
-				log.error("db ip => " + info.getDbIp() + ", db name => " + info.getDbName());
-			});
-		}).thenRunAsync(()->{
+		CompletableFuture.runAsync(() -> list.stream().forEach(info -> {
+			getFromDynamicDataSource(tablesMap, columnsMap, all, info);
+			log.error("db ip => " + info.getDbIp() + ", db name => " + info.getDbName());
+		})).thenRunAsync(()->{
 			// 数据拉取完毕之后，集中插入到默认数据源中
 			// 操作完成之后，恢复使用默认数据源
 			DataSourceContextHolder.toDefault();
 			// 进行插入
 			insertToDefaultDataSource(all);
-		}).whenComplete((t,u) -> {
-			log.info("数据库异步操作总耗时:" + (System.currentTimeMillis() - time + "毫秒"));
-		});
+		}).whenComplete((t,u) -> log.info("数据库异步操作总耗时:" + (System.currentTimeMillis() - time + "毫秒")));
 	}
 
 	// 从动态数据源原中获取数据表结构信息

@@ -112,4 +112,6 @@ sunny:
   ex: 
     table: ft_sys_table,ft_sys_column
     column: sort,del_flag,status,create_by,create_time,last_update_by,last_update_time
-    
+
+  job:
+    package:
