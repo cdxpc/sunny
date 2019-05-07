@@ -25,7 +25,7 @@ public class ReflectionsConfig {
         String defPk = SpringBootStarter.class.getPackage().getName();
         String[] spk = {};
         if(scanPackage != null && !"".equals(scanPackage)) {
-            spk = scanPackage.split(",;\\| "); // 分隔符：','、';'、'|'、' '（空格）
+            spk = scanPackage.split(",;| "); // 分隔符：','、';'、'|'、' '（空格）
         }
         return new Reflections(ConfigurationBuilder.build(defPk, spk));
     }

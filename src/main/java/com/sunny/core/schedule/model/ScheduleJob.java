@@ -18,6 +18,6 @@ public class ScheduleJob {
 	private String springBeanName; // spring bean name
 	private String methodName; // 执行的方法名
 	private JobDataMap jobData;
-	private String isConcurrent; // 是否有状态
+	private boolean concurrent = false; // 是否允许并发执行同一个任务   true: 允许  false: 不允许
 	
 }

@@ -6,15 +6,7 @@ import com.sunny.core.schedule.factory.QuartzJobFactory;
 import com.sunny.core.schedule.model.ScheduleJob;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.quartz.CronScheduleBuilder;
-import org.quartz.CronTrigger;
-import org.quartz.JobBuilder;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerBuilder;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
 import java.lang.reflect.Method;
@@ -23,8 +15,6 @@ import java.lang.reflect.Method;
 public class DynamicJobsHelper {
 	
 	public static final String STATUS_RUNNING = "1";
-	public static final String CONCURRENT_IS = "1";
-	public static final String CONCURRENT_NOT = "0";
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void addJob(ScheduleJob job, SchedulerFactoryBean schedulerFactory) {
@@ -35,12 +25,12 @@ public class DynamicJobsHelper {
 		String jobName = job.getJobName();
 		String jobGroup = job.getJobGroup();
 		Scheduler scheduler = schedulerFactory.getScheduler();
-		TriggerKey triggerKey = TriggerKey.triggerKey(job.getJobName(), job.getJobGroup());
+		TriggerKey triggerKey = TriggerKey.triggerKey(jobName, jobGroup);
 		try {
 			CronTrigger trigger = (CronTrigger) scheduler.getTrigger(triggerKey);
 			// 如果不存在，则创建一个
 			if(trigger == null) {
-				Class clazz = CONCURRENT_IS.equals(job.getIsConcurrent()) ? QuartzJobFactory.class : DisallowConcurrentQuartzJobFactory.class;
+				Class clazz = job.isConcurrent() ? QuartzJobFactory.class : DisallowConcurrentQuartzJobFactory.class;
 				JobDetail jobDetail = JobBuilder.newJob(clazz)
 						                        .withIdentity(jobName, jobGroup)
 						                        .withDescription(job.getDescription())
@@ -48,7 +38,7 @@ public class DynamicJobsHelper {
 				jobDetail.getJobDataMap().put("scheduleJob", job);
 				CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
 				trigger = TriggerBuilder.newTrigger()
-				                        .withIdentity(jobName, jobGroup)
+				                        .withIdentity(triggerKey)
 										.usingJobData(job.getJobData())
 				                        .withDescription(job.getDescription())
 				                        .withSchedule(cronScheduleBuilder)
@@ -68,7 +58,7 @@ public class DynamicJobsHelper {
 				// 按更新后的重置job执行
 				scheduler.rescheduleJob(triggerKey, trigger);
 			}
-			if(CONCURRENT_NOT.equals(job.getIsConcurrent())) {
+			if(!job.isConcurrent()) {  // true是允许并发，所以当为 !false 的时候才需要将同一个任务暂停
 				scheduler.pauseJob(JobKey.jobKey(jobName, jobGroup));
 			}
 		} catch (SchedulerException e) {
@@ -142,8 +132,11 @@ public class DynamicJobsHelper {
 			obj = SpringContextHolder.getBean(scheduleJob.getSpringBeanName());
 		} else if(StringUtils.isNotEmpty(scheduleJob.getBeanClass())) {
 			try {
-				clazz = Class.forName(scheduleJob.getBeanClass());
-				obj = clazz.newInstance();
+				obj = SpringContextHolder.getBean(scheduleJob.getBeanClass());
+				if(obj == null) {
+					clazz = Class.forName(scheduleJob.getBeanClass());
+					obj = clazz.newInstance();
+				}
 			} catch (ClassNotFoundException e) {
 				log.error("类没找到：" + e.getMessage());
 			} catch (Exception e) {
@@ -154,15 +147,23 @@ public class DynamicJobsHelper {
 		if(obj != null) {
 			clazz = obj.getClass();
 			try {
-				method = clazz.getDeclaredMethod(scheduleJob.getMethodName(), String.class);
+				if(scheduleJob.getJobData() != null) {
+					method = clazz.getDeclaredMethod(scheduleJob.getMethodName(), JobDataMap.class);
+				} else {
+					method = clazz.getDeclaredMethod(scheduleJob.getJobName());
+				}
 			} catch (NoSuchMethodException e) {
-				log.error("方法为找到：" + e.getMessage());
+				log.error("方法未找到：" + e.getMessage());
 			} 
 		}
 		
 		if(method != null) {
 			try {
-				method.invoke(obj, scheduleJob.getJobData());
+				if(scheduleJob.getJobData() != null) {
+					method.invoke(obj, scheduleJob.getJobData());
+				} else {
+					method.invoke(obj);
+				}
 			} catch (Exception e) {
 				log.error("方法执行异常：" + e.getMessage());
 			} 
