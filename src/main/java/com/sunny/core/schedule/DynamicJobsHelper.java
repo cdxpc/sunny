@@ -58,7 +58,7 @@ public class DynamicJobsHelper {
 				// 按更新后的重置job执行
 				scheduler.rescheduleJob(triggerKey, trigger);
 			}
-			if(!job.isConcurrent()) {  // true是允许并发，所以当为 !false 的时候才需要将同一个任务暂停
+			if(!job.isConcurrent()) {  // true：为运行并发，则不用暂停正在执行的同一任务， false:为禁止并发，则需要暂停正在执行的同一任务
 				scheduler.pauseJob(JobKey.jobKey(jobName, jobGroup));
 			}
 		} catch (SchedulerException e) {
@@ -68,11 +68,11 @@ public class DynamicJobsHelper {
 	
 	/**
 	 * 暂停定时任务
-	 * @param jobName
-	 * @param jobGroup
-	 * @param schedulerFactory
+	 * @param jobName 任务名
+	 * @param jobGroup 任务组
+	 * @param schedulerFactory 调度器工厂
 	 */
-	public static void stopJob(String jobName, String jobGroup, SchedulerFactoryBean schedulerFactory) {
+	public static void pauseJob(String jobName, String jobGroup, SchedulerFactoryBean schedulerFactory) {
 		Scheduler scheduler = schedulerFactory.getScheduler();
 		try {
 			scheduler.pauseJob(JobKey.jobKey(jobName, jobGroup));
@@ -86,11 +86,11 @@ public class DynamicJobsHelper {
 	
 	/**
 	 * 恢复定时任务
-	 * @param jobName
-	 * @param jobGroup
-	 * @param schedulerFactory
+	 * @param jobName 任务名
+	 * @param jobGroup 任务组
+	 * @param schedulerFactory 调度器工厂
 	 */
-	public static void startJob(String jobName, String jobGroup, SchedulerFactoryBean schedulerFactory) {
+	public static void resumeJob(String jobName, String jobGroup, SchedulerFactoryBean schedulerFactory) {
 		Scheduler scheduler = schedulerFactory.getScheduler();
 		try {
 			scheduler.resumeJob(JobKey.jobKey(jobName, jobGroup));
@@ -104,9 +104,9 @@ public class DynamicJobsHelper {
 	
 	/**
 	 * 移除定时任务
-	 * @param jobName
-	 * @param jobGroup
-	 * @param schedulerFactory
+	 * @param jobName 任务名
+	 * @param jobGroup 任务组
+	 * @param schedulerFactory 调度器工厂
 	 */
 	public static void deleteJob(String jobName, String jobGroup, SchedulerFactoryBean schedulerFactory) {
 		Scheduler scheduler = schedulerFactory.getScheduler();
@@ -122,19 +122,17 @@ public class DynamicJobsHelper {
 
 	/**
 	 * 通过反射调用scheduleJob中定义的方法
-	 * @param scheduleJob
+	 * @param scheduleJob 可调度的任务
 	 */
 	public static void invokeMethod(ScheduleJob scheduleJob) {
 		Object obj = null;
-		Class<?> clazz = null;
+		Class<?> clazz;
 		Method method = null;
-		if(StringUtils.isNotEmpty(scheduleJob.getSpringBeanName())) {
-			obj = SpringContextHolder.getBean(scheduleJob.getSpringBeanName());
-		} else if(StringUtils.isNotEmpty(scheduleJob.getBeanClass())) {
+		if(StringUtils.isNotEmpty(scheduleJob.getBeanClass())) {
 			try {
-				obj = SpringContextHolder.getBean(scheduleJob.getBeanClass());
+				clazz = Class.forName(scheduleJob.getBeanClass());
+				obj = SpringContextHolder.getBean(clazz);
 				if(obj == null) {
-					clazz = Class.forName(scheduleJob.getBeanClass());
 					obj = clazz.newInstance();
 				}
 			} catch (ClassNotFoundException e) {

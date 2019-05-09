@@ -15,7 +15,6 @@ public class ScheduleJob {
 	private String jobStatus;
 	private String description;
 	private String beanClass; // 包名+类名
-	private String springBeanName; // spring bean name
 	private String methodName; // 执行的方法名
 	private JobDataMap jobData;
 	private boolean concurrent = false; // 是否允许并发执行同一个任务   true: 允许  false: 不允许
