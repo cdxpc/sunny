@@ -11,7 +11,6 @@ public class TaskDto extends DtoEntity {
 	
 	private static final long serialVersionUID = 1L;
 
-	// 任务ID
 	private String taskId;
 	// 任务名称
 	private String taskName;
@@ -20,17 +19,15 @@ public class TaskDto extends DtoEntity {
 	// 表达式
 	private String cron;
 	// 任务运行状态
-	private String runStatus;
-	
-	// 数据库ID
-	private String dbId;
-	// 数据库名
-	private String dbName;
-	// 数据库表
-	private String tableName;
-	// 任务执行规则
-	private String ruleId;
-	// 任务执行规则
-	private String ruleName;
+	private String runStatus; //1 - 正常   2 - 异常     任务状态 status 1-未发布   2-运行中  3-已停止
+
+	// 任务执行规则类
+	private String ruleClassName;
+	// 任务执行规则方法
+	private String ruleMethodName;
+	// 参数json
+	private String paramJson;
+	// 任务描述
+	private String remarks;
 
 }

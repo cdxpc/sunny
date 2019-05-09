@@ -7,24 +7,87 @@
 <body class="bg-white">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
 		<form id="task-form" th:object="${task}" autocomplete="off" class="form-horizontal m" >
-			<input type="hidden" name="taskId" th:field="*{taskId}"/>
-			<div class="form-group">
-				<label class="col-sm-3 control-label ">任务名称：<font color="red">*</font></label>
-				<div class="col-sm-8">
-					<input name="taskName" th:field="*{taskName}" maxlength="50" class="form-control required" placeholder="请输入任务名称，不可重复，不可为空"/>
+			<input id="taskId" type="hidden" name="taskId" th:field="*{taskId}"/>
+
+			<ul id="myTab" class="nav nav-tabs">
+				<li class="active">
+					<a href="#aa" data-toggle="tab">任务基本配置</a>
+				</li>
+				<li><a href="#bb" data-toggle="tab">执行参数配置</a></li>
+				<li><a href="#cc" data-toggle="tab">任务详细描述</a></li>
+			</ul>
+
+			<div id="myTabConten" class="tab-content">
+				<div class="tab-pane fade in active" id="aa">
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务名称：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<input name="taskName" th:field="*{taskName}" maxlength="150" class="form-control required" placeholder="请输入任务名称，不可重复，不可为空"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务组：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<input name="taskGroup" th:field="*{taskGroup}" maxlength="150" class="form-control required" placeholder="请输入任务组，不可为空"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">表达式：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<input name="cron" th:field="*{cron}" maxlength="150" class="form-control required" placeholder="请输入表达式，不可为空"/>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务规则类：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<select id="ruleClassName" name="ruleClassName" class="form-control required" onchange="selectMethod()">
+								<option th:each="rc : ${ruleClasses}" th:text="${rc.ruleClassName}" th:value="${rc.ruleClassName}" th:field="*{ruleClassName}"></option>
+							</select>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务规则执行方法：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<select id="ruleMethodName" name="ruleMethodName" class="form-control required">
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="bb">
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">执行参数模板：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<textarea id="temp" class="form-control required" rows="10" readonly></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务规则执行参数：<font color="red">*</font></label>
+						<div class="col-sm-9">
+							<textarea name="paramJson" th:field="*{paramJson}" rows="10" class="form-control required" placeholder="按上面的模板进行相应的配置,请确保配置内容的正确性！"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="tab-pane fade" id="cc">
+					<div class="form-group">
+						<label class="col-sm-3 control-label ">任务详细描述：</label>
+						<div class="col-sm-9">
+							<textarea name="remarks" th:field="*{remarks}" rows="15" class="form-control " placeholder="输入该定时任务所执行的详细信息，帮助理解该任务的用途！"></textarea>
+						</div>
+					</div>
 				</div>
 			</div>
 		</form>
 	</div>
 </body>
-<script type="text/javascript">
+<script th:inline="javascript">
 var $table = null;
+var task = /*[[${task}]]*/
 function doSubmit(table) {//回调函数，在编辑和保存动作时，供openDialog调用提交表单。
 	$table = table;
-	if(validateForm.form()){
+	if(validateForm.form() && valid()){
 		$("#task-form").submit();
 	}
-} 
+}
 
 var options = {
 		rules:{},
@@ -32,8 +95,80 @@ var options = {
 }
 
 $(function() {
+	selectMethod();
 	validateForm = $.form.validate("task-form", options);
 });
 
+function selectMethod() {
+	var ruleClassName = $("#ruleClassName").val();
+	getMethods(ruleClassName);
+
+	// 初始化参数页面的内容
+	initParams();
+}
+
+function getMethods(ruleClassName) {
+	$.ajax({
+		url : ctx + "dataclean/rule/ruleMethods",
+		type : 'post',
+		dataType : 'json',
+		async: false,
+		data: {"ruleClassName": ruleClassName},
+		success : function(data) {
+			if (data.result.code === 200) {
+				var rows = data.rows;
+				var html = "";
+				if(rows.length > 0) {
+					for(var i = 0; i < rows.length; i++) {
+						if(task.ruleMethodName && task.ruleMethodName === rows[i].ruleMethodName) {
+							html += '<option selected value="'+ task.ruleMethodName +'">'+task.ruleMethodName+'</option>';
+						} else {
+							html += '<option value="' + rows[i].ruleMethodName + '">' + rows[i].ruleMethodName + '</option>';
+						}
+					}
+				}
+				$("#ruleMethodName").html(html);
+			}
+		}
+	});
+}
+
+function initParams() {
+	var ruleClassName = $("#ruleClassName").val();
+	var ruleMethodName = $("#ruleMethodName").val();
+	$.ajax({
+		url : ctx + "dataclean/rule/ruleTemp",
+		type : 'post',
+		dataType : 'json',
+		async: false,
+		data: {"ruleClassName": ruleClassName, "ruleMethodName": ruleMethodName},
+		success : function(data) {
+			if (data.result.code === 200) {
+				var rows = data.rows;
+				$("#temp").text(rows.argsTemp);
+			}
+		}
+	});
+}
+
+function valid() {
+	if(!$("#taskName").val()) {
+		$.modal.msg("任务名称不能为空!")
+		return false;
+	}
+	if(!$("#taskGroup").val()) {
+		$.modal.msg("任务组不能为空!")
+		return false;
+	}
+	if(!$("#cron").val()) {
+		$.modal.msg("任务表达式不能为空!")
+		return false;
+	}
+	if(!$("#paramJson").val()) {
+		$.modal.msg("任务执行参数不能为空!")
+		return false;
+	}
+	return true;
+}
 </script>
 </html>
