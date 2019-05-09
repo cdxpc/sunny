@@ -96,4 +96,6 @@ public class PlatformConstants {
 	public static final String STATUS_YES = "1";   // 1-是
 	public static final String STATUS_NO = "2";	// 2-否
 
+	public static final String temp = "{\"sources\":[\"源数据源ID(操作默认数据源，可为空)\",\"目标数据源ID（操作单个数据源可为空）\"],\"tableAndColumn\":{\"tableName\":\"数据库表名\",\"andOr\":\"多个条件之间的连接方式，单个条件时，可为空\",\"whereColumns\":[{\"columnName\":\"列名1\",\"columnValue\":\"列值1\",\"connector\":\"条件方式(eg: >, <, >=, <=, !=等)\"},{\"columnName\":\"列名2\",\"columnValue\":\"列值2\",\"connector\":\"条件方式(eg: >, <, >=, <=, !=等)\"}]},\"pages\":\"每次操作数据量(eg: 100)\"}";
+
 }
