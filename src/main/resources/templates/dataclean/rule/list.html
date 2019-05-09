@@ -20,22 +20,8 @@
 								<div class="accordion-inner">
 									<form id="searchForm" th:object="${rule}" class="form form-horizontal well clearfix">
 										<div class="col-xs-6 col-sm-6 col-md-3">
-											<label class="label-item single-overflow pull-left" title="规则名称：">规则名称：</label> 
-											<input name="ruleName" maxlength="64" class=" form-control input-sm" />
-										</div>
-										<div class="col-xs-6 col-sm-6 col-md-3">
-											<label class="label-item single-overflow pull-left" title="规则类型：">规则类型：</label> 
-											<select name="ruleType" class="form-control" th:with="values=${@dict.getValuesByType('dict_clean_rule_type')}">
-												<option value="">请选择规则类型 ...</option>
-							                    <option th:each="dict : ${values}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
-							                </select>
-										</div>
-										<div class="col-xs-6 col-sm-6 col-md-3">
-											<label class="label-item single-overflow pull-left" title="策略类型：">策略类型：</label> 
-											<select name="ruleStrategyType" class="form-control" th:with="values=${@dict.getValuesByType('dict_clean_rule_strategy_type')}">
-												<option value="">请选择策略类型 ...</option>
-							                    <option th:each="dict : ${values}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
-							                </select>
+											<label class="label-item single-overflow pull-left" title="规则类：">规则类：</label>
+											<input name="ruleClassName" maxlength="64" class=" form-control input-sm" />
 										</div>
 										<div class="col-xs-12 col-sm-6 col-md-3">
 											<div style="margin-top: 26px">
@@ -50,10 +36,10 @@
 
 						<!-- 工具栏 -->
 						<div id="toolbar">
-							<a id="add" class="btn btn-primary">
+							<!--<a id="add" class="btn btn-primary">
 								<i class="glyphicon glyphicon-plus"></i> 新建
 							</a>
-							<!-- <button id="remove" class="btn btn-danger" disabled onclick="del()">
+							<button id="remove" class="btn btn-danger" disabled onclick="del()">
 								<i class="glyphicon glyphicon-remove"></i> 删除
 							</button> -->
 							<a class="accordion-toggle btn btn-default " data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">

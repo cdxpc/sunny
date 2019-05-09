@@ -14,7 +14,13 @@ import com.sunny.module.dataclean.rule.entity.Rule;
 import com.sunny.module.dataclean.rule.service.RuleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequestMapping(DataCleanRestApiConstants.REST_API_RULE)
@@ -75,6 +81,29 @@ public class RuleController extends AbstractInternalController<Rule, RuleDto> {
 	@ResponseBody
 	public ResponseJson remove(String id) {
 		return deleteById(id);
+	}
+
+	@PostMapping("ruleMethods")
+	@ResponseBody
+	public ResponseJson ruleMethods(String ruleClassName) {
+		Rule r = Rule.of();
+		r.setRuleClassName(ruleClassName);
+		List<Rule> rules = ruleService.find(r);
+		ResponseJson json = ResponseJson.ok();
+		json.setRows(rules);
+		return json;
+	}
+
+	@PostMapping("ruleTemp")
+	@ResponseBody
+	public ResponseJson ruleMethods(String ruleClassName, String ruleMethodName) {
+		Rule r = Rule.of();
+		r.setRuleClassName(ruleClassName);
+		r.setRuleMethodName(ruleMethodName);
+		Rule rule = ruleService.findOne(r);
+		ResponseJson json = ResponseJson.ok();
+		json.setRows(rule);
+		return json;
 	}
 	
 }

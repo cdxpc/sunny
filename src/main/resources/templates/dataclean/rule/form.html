@@ -9,49 +9,55 @@
 		<form id="rule-form" th:object="${rule}" class="form-horizontal m" >
 			<input type="hidden" name="ruleId" th:field="*{ruleId}"/>
 			<div class="form-group">
-				<label class="col-sm-2 control-label ">规则名称：<font color="red">*</font></label>
-				<div class="col-sm-10">
-					<input name="ruleName" th:field="*{ruleName}" maxlength="50" class="form-control required" placeholder="请输入规则名称，不可重复，不可为空"/>
+				<label class="col-sm-3 control-label ">规则类：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<input name="ruleClassName" th:field="*{ruleClassName}" maxlength="200" class="form-control required" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-2 control-label ">表达式：<font color="red">*</font></label>
-				<div class="col-sm-10">
-					<input name="cron" th:field="*{cron}" maxlength="50" class="form-control required" placeholder="请输入表达式，不可为空"/>
+				<label class="col-sm-3 control-label ">规则类说明：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<input name="classComment" th:field="*{classComment}" maxlength="200" class="form-control required" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-2 control-label ">策略类型：<font color="red">*</font></label>
-				<div class="col-sm-4">
-					<select id="ruleStrategyType" name="ruleStrategyType" class="form-control required">
-	                    <option th:each="dict : ${ruleStrategyTypes}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{ruleStrategyType}"></option>
-	                </select>
-				</div>
-				<label class="col-sm-2 control-label ">规则类型：<font color="red">*</font></label>
-				<div class="col-sm-4">
-					<select id="ruleType" name="ruleType" class="form-control required">
-		                    <option th:each="dict : ${ruleTypes}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{ruleType}"></option>
-		                </select>
+				<label class="col-sm-3 control-label ">规则方法：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<input name="ruleMethodName" th:field="*{ruleMethodName}" maxlength="200" class="form-control required" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-2 control-label ">是否默认：<font color="red">*</font></label>
-				<div class="col-sm-4">
-					<select id="isDefault" name="isDefault" class="form-control required">
-	                    <option th:each="dict : ${isDefaults}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}" th:field="*{isDefault}"></option>
-	                </select>
-				</div>
-				<label class="col-sm-2 control-label ">天数：<font color="red">*</font></label>
-				<div class="col-sm-4">
-					<input name="days" th:field="*{days}" maxlength="50" class="form-control required" placeholder="请输入天数，不可为空"/>
+				<label class="col-sm-3 control-label ">规则方法说明：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<input name="methodComment" th:field="*{methodComment}" maxlength="200" class="form-control required" />
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-2 control-label ">描述说明：</label>
-				<div class="col-sm-10">
-					<textarea name="remarks" style="resize:none" th:text="*{remarks}" rows="5" maxlength="1000" class="form-control "></textarea>
+				<label class="col-sm-3 control-label ">是否需要切换数据源：<font color="red">*</font></label>
+				<div class="col-sm-9" th:switch="*{dynamicDataSource}">
+					<input name="dynamicDataSource" th:case="1" th:value="是" maxlength="200" class="form-control required" />
+					<input name="dynamicDataSource" th:case="2" th:value="否" maxlength="200" class="form-control required" />
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">是否涉及多数据源：<font color="red">*</font></label>
+				<div class="col-sm-9" th:switch="*{multipleDataSource}">
+					<input name="dynamicDataSource" th:case="1" th:value="是" maxlength="200" class="form-control required" />
+					<input name="dynamicDataSource" th:case="2" th:value="否" maxlength="200" class="form-control required" />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">规则绑定任务数：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<input name="bindCount" th:field="*{bindCount}" maxlength="200" class="form-control required" />
+				</div>
+			</div>
+			<!--<div class="form-group">
+				<label class="col-sm-3 control-label ">规则参数模板：<font color="red">*</font></label>
+				<div class="col-sm-9">
+					<textarea name="argsTemp" th:field="*{argsTemp}" rows="10" class="form-control required" readonly></textarea>
+				</div>
+			</div>-->
 		</form>
 	</div>
 </body>
@@ -65,8 +71,8 @@ function doSubmit(table) {//回调函数，在编辑和保存动作时，供open
 } 
 
 var options = {
-		rules:{},
-    	messages: {}	
+	rules:{},
+	messages: {}
 }
 
 $(function() {

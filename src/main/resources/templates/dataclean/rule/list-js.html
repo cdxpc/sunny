@@ -14,10 +14,6 @@ $(function() {
 	
 });
 
-var ruleTypes = /*[[${@dict.getValuesByType('dict_clean_rule_type')}]]*/;
-var ruleStrategyTypes = /*[[${@dict.getValuesByType('dict_clean_rule_strategy_type')}]]*/;
-var isDefaults = /*[[${@dict.getValuesByType('dict_is_default')}]]*/;
-
 var canLook_rule = true;
 var canEdit_rule = true;
 var prefix_rule = ctx + "dataclean/rule";
@@ -40,46 +36,39 @@ var ruleOptions = {
     	}
     }, 
     columns: [{
-		checkbox: true
+		checkbox: false
 	}, {
-	    field: 'ruleName',
-	    title: '规则名称',
+	    field: 'ruleClassName',
+	    title: '规则类',
 	    formatter:function(value, row, index){
-	    	value = value != null && value.length > 20 ? value.substring(0, 15) + " ..." : value;
+	    	value = value != null && value.length > 100 ? value.substring(0, 100) + " ..." : value;
 	    	return '<a  href="#" onclick="look(\'' + row.ruleId + '\')">'+ value + '</a>';
 	    }
 	}, {
-	    field: 'ruleType',
-	    title: '规则类型',
-	    formatter:function(value, row, index) {
-	    	return $.dictHelper.show(ruleTypes, value);
+	    field: 'classComment',
+	    title: '规则类说明'
+	}, {
+	    field: 'ruleMethodName',
+	    title: '规则方法'
+	}, {
+	    field: 'methodComment',
+	    title: '规则方法说明'
+	}, {
+	    field: 'dynamicDataSource',
+	    title: '是否动态数据源',
+        formatter:function(value, row, index){
+	        return value == '1' ? '是' : '否';
         }
 	}, {
-	    field: 'ruleStrategyType',
-	    title: '策略类型',
-	    formatter:function(value, row, index) {
-            return $.dictHelper.show(ruleStrategyTypes, value);
+	    field: 'multipleDataSource',
+	    title: '是否多数据源',
+        formatter:function(value, row, index){
+            return value == '1' ? '是' : '否';
         }
 	}, {
-	    field: 'cron',
-	    title: '表达式'
-	}, {
-	    field: 'days',
-	    title: '天数'
-	}, {
-	    field: 'isDefault',
-	    title: '是否默认规则',
-	    width: '70px',
-	    formatter:function(value, row, index) {
-            return $.dictHelper.show(isDefaults, value);
-        }
-	}, {
-	    field: 'remarks',
-	    title: '描述说明',
-	    formatter:function(value, row , index){
-	    	return value != null && value.length > 200 ? value.substring(0, 150) + " ..." : value;
-	    }
-	}, {
+	    field: 'bindCount',
+	    title: '绑定任务数'
+	/*}, {
         field: 'operate',
         title: '操作',
         width: '50px',
@@ -97,7 +86,7 @@ var ruleOptions = {
        			del = ' <a href="#" class="remove" title="删除"><i class="fa fa-remove"></i></a>';
         	}
 	    	return [del].join('');
-	    }
+	    }*/
     }]
 };
 
