@@ -57,13 +57,13 @@ var ruleOptions = {
 	    field: 'dynamicDataSource',
 	    title: '是否动态数据源',
         formatter:function(value, row, index){
-	        return value == '1' ? '是' : '否';
+	        return value === '1' ? '是' : '否';
         }
 	}, {
 	    field: 'multipleDataSource',
 	    title: '是否多数据源',
         formatter:function(value, row, index){
-            return value == '1' ? '是' : '否';
+            return value === '1' ? '是' : '否';
         }
 	}, {
 	    field: 'bindCount',
