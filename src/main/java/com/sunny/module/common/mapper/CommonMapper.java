@@ -1,6 +1,8 @@
 package com.sunny.module.common.mapper;
 
+import com.sunny.module.dataclean.WhereColumn;
 import com.sunny.module.db.table.entity.DbTable;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -19,5 +21,11 @@ public interface CommonMapper {
 
 	@Select(value = "SELECT a.table_name AS tableName, a.column_name AS columnName, b.comments AS columnComment, b.data_type AS dataType FROM ALL_TAB_COLS a, ALL_COL_COMMENTS b WHERE a.table_name = b.table_name AND a.column_name = b.column_name AND a.owner = #{owner}")
 	List<DbTable> getColumnsFromOracle(@Param("owner") String owner);
+
+	@Delete("delete from ${tableName}")
+	int deleteAll(@Param("tableName") String tableName);
+
+	@Delete("delete from ${tableName}")
+	int onlyDeleteByCondition(@Param("tableName") String tableName, @Param("list") List<WhereColumn> wcs);
 
 }
