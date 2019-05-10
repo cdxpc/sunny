@@ -3,8 +3,8 @@ package com.sunny.module.dataclean.rule.templelate;
 import com.sunny.core.annotation.RuleClass;
 import com.sunny.core.annotation.RuleMethod;
 import com.sunny.core.util.json.JacksonUtils;
+import com.sunny.module.dataclean.ParamsModel;
 import com.sunny.module.dataclean.rule.RuleStartupInitHelper;
-import com.sunny.module.dataclean.task.domain.TaskParams;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.JobDataMap;
 import org.springframework.stereotype.Component;
@@ -28,7 +28,7 @@ public class DbDataCleanRule {
     public void deleteAll(JobDataMap params) {
         String json = params.getString("json");
         // 这里面有任务执行是所需的全部参数信息
-        TaskParams tp = JacksonUtils.getInstance(true).toBean(json, TaskParams.class);
+        ParamsModel pm = JacksonUtils.getInstance(true).toBean(json, ParamsModel.class);
         log.error("deleteAll - 删除某张表的全部数据...");
     }
 
@@ -36,7 +36,7 @@ public class DbDataCleanRule {
     public void onlyDeleteByCondition(JobDataMap params) {
         String json = params.getString("json");
         // 这里面有任务执行是所需的全部参数信息
-        TaskParams tp = JacksonUtils.getInstance(true).toBean(json, TaskParams.class);
+        ParamsModel pm = JacksonUtils.getInstance(true).toBean(json, ParamsModel.class);
         log.error("onlyDeleteByCondition - 按指定条件删除某张表的数据..." + json);
     }
 
@@ -44,7 +44,7 @@ public class DbDataCleanRule {
     public void backupAfterDeleteByCondition(JobDataMap params) {
         String json = params.getString("json");
         // 这里面有任务执行是所需的全部参数信息
-        TaskParams tp = JacksonUtils.getInstance(true).toBean(json, TaskParams.class);
+        ParamsModel pm = JacksonUtils.getInstance(true).toBean(json, ParamsModel.class);
         log.error("backupAfterDeleteByCondition - 按指定条件先备份，再删除某张表的数据..." + json);
     }
 
