@@ -1,6 +1,6 @@
 package com.sunny.plugin.gen;
 
-import com.sunny.core.constant.RestApiConstants;
+import com.sunny.plugin.PluginRestApiConstants;
 
 /**
  * gen module rest api 常量
@@ -10,9 +10,7 @@ import com.sunny.core.constant.RestApiConstants;
  * @date 2019年3月18日
  * @since 1.0.0v
  */
-public class GenRestApiConstants extends RestApiConstants {
-
-	private static final String PLUGIN = "plugin/";
+public class GenRestApiConstants extends PluginRestApiConstants {
 
 	// gen
 	public static final String REST_API_GEN = "gen";
