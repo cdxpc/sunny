@@ -68,11 +68,11 @@ public class DataBaseController extends AbstractInternalController<DataBase, Dat
 	@PostMapping(RestApiConstants.SAVE)
 	@ResponseBody
 	public ResponseJson save(DataBaseDto dto) {
-//		if(StringUtils.isEmpty(dto.getDbId())) {
-//			dto.setDbId(UuidUtils.uuid());
-//			return create(dto);
+//		if(StringUtils.isEmpty(domain.getDbId())) {
+//			domain.setDbId(UuidUtils.uuid());
+//			return create(domain);
 //		} 
-//		return update(dto.getDbId(), dto);
+//		return update(domain.getDbId(), domain);
 		
 		if(StringUtils.isNotEmpty(dto.getDbId())) {
 			// 这里不使用update的方式，改为：先删除，在插入

@@ -19,11 +19,11 @@ public class TaskServiceImpl extends CudServiceImpl<Task, TaskMapper> implements
 	@Override
 	public ResponseJson findList2(TaskDto dto, Page<Task> page) {
 		ResponseJson json = ResponseJson.noData();
-		// int total = taskMapper.findCount2(dto.getTaskName(), dto.getDbId(), dto.getRuleId());
+		// int total = taskMapper.findCount2(domain.getTaskName(), domain.getDbId(), domain.getRuleId());
 		// if(total > 0) {
 		// 	int start = (page.getPageNum() -1) * page.getPageSize();
 		// 	int pageSize = page.getPageSize();
-		// 	List<TaskDto> tasks = taskMapper.findList2(dto.getTaskName(), dto.getDbId(), dto.getRuleId(), start, pageSize);
+		// 	List<TaskDto> tasks = taskMapper.findList2(domain.getTaskName(), domain.getDbId(), domain.getRuleId(), start, pageSize);
 		// 	json = ResponseJson.ok();
 		// 	json.setPageNow(page.getPageNum());
 		// 	json.setPageSize(pageSize);
